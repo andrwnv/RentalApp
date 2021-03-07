@@ -3,7 +3,7 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 import Reg from './pages/Reg/Reg';
 import Login from './pages/Login/Login';
-import NewObject from './pages/New/NewObject';
+import NewObject from './pages/NewObject/NewObject';
 import Dashboard from './pages/Dashboard/Dashboard';
 
 
