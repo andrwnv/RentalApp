@@ -1,0 +1,153 @@
+
+.spot-list {
+    width: 100%;
+    list-style: none;
+    margin-bottom: 30px;
+    background: #fff;
+    border-radius: 4px;
+    padding: 30px;
+
+}
+
+.spot-list div header {
+    width: 100%;
+    height: 120px;
+    background-size: cover;
+    border-radius: 4px;
+}
+
+.spot-list div strong {
+    margin-top: 10px;
+    font-size: 24px;
+    color: #444444
+}
+
+.spot-list span {
+    font-size: 17px;
+    color: rgb(48, 47, 47)
+}
+
+ul.notifications {
+    list-style: none;
+    margin-bottom: 15px;
+
+}
+
+ul.notifications li {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+ul.notifications li button {
+    margin-right: 10px;
+    border: 0;
+    font-weight: bold;
+    margin-top: 10px;
+    background-color: #ffffff;
+    cursor: pointer
+
+}
+
+ul.notifications li button.accept {
+    color: #84c870
+}
+
+ul.notifications li button.accept:hover {
+    color: white;
+    background: #84c870
+}
+
+ul.notifications li button.reject {
+    color: #e55e5e
+}
+
+ul.notifications li button.reject:hover {
+    color: white;
+    background: #e55e5e
+}
+
+.contentSpots {
+    margin-right: 20px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+
+}
+
+.ferias {
+    font-size: 26px;
+    font-weight: bold;
+    color: #4b4b4b;
+    margin-top: 40px;
+}
+
+.spots {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.spots p {
+    color: #6b6b6b;
+    font-size: 15px;
+}
+
+.contentDashboard .spot-list > p {
+    font-size: 22px;
+    line-height: 30px;
+    margin-bottom: 30px;
+
+}
+
+.contentDashboard .spot-list form {
+    display: flex;
+    flex-direction: column
+}
+
+.contentDashboard .spot-list form label {
+    font-size: 14px;
+    color: #444444;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.contentDashboard .spot-list form input {
+    margin-bottom: 20px;
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+    height: 45px;
+    padding: 0 15px;
+    font-size: 16px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 2px;
+    width: 100%;
+    height: 42px;
+    padding: 0 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #f05a5b;
+    color: #fff;
+    cursor: pointer
+}
+
+.contentDashboard .spot-list form label span {
+    font-weight: normal;
+    color: #999999;
+    font-size: 12px;
+}
+
+.btn:hover {
+    background: #e14f50
+}
+
+
+@media screen and (max-width: 767px) {
+    .contentSpots {
+        height: 290px;
+        padding-left: 5px;
+    }
+}

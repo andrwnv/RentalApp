@@ -1,0 +1,36 @@
+.cardStyle {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.Experience {
+    display: flex;
+    flex-direction: row;
+    margin-right: 25px;
+    margin-left: 25px;
+    margin-top: 30px;
+    width: 270px;
+    height: 90px;
+    box-shadow: 1px 1px 5px 0.1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.Experience p {
+    margin: 30px 10px;
+    color: #424242;
+    font-size: 18px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-weight: bold;
+}
+
+.User {
+    font-size: 26px;
+    font-weight: bold;
+    color: #4b4b4b;
+    margin-left: 50px;
+}
+
+.img {
+    width: 120px;
+}
