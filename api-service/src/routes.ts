@@ -1,33 +1,33 @@
 import express from 'express';
-import QueryResult from 'pg';
+
+import Connection from './models/db_models';
 
 const routes = express.Router();
 
-const pool = new QueryResult.Pool({
-    user: 'postgres', host: 'localhost', database: 'coursework_db', password: '852456', port: 5432,
-});
-
-routes.get('/', (req: express.Request, res: express.Response) => {
-    res.status(200).json('Test');
-});
-
-routes.get('/users', (req: express.Request, res: express.Response) => {
-    pool.query('SELECT * FROM users', (error: Error, result: any) => {
-        if ( error ) {
-            throw error;
-        }
-
-        res.status(200).json(result.rows);
+routes.get('/database/connection_status', (req, res) => {
+    Connection.authenticate().then(() => {
+        console.log('Connection has been established successfully.');
+        res.status(200).json('ok');
+    }).catch(err => {
+        console.error('Unable to connect to the database:', err);
+        res.status(500).json('upsss/');
     });
 });
 
-routes.post('/users_add', (req: express.Request, res: express.Response) => {
-    pool.query('INSERT INTO users(user_name, age) VALUES ($1, $2)', ['name', 12], (error: Error, result: any) => {
-        if ( error ) {
-            throw error
-        }
+routes.get('/init_db', (req: express.Request, res: express.Response) => {
+    Connection.sync().then();
+    res.status(200).json('Create');
+});
 
-        res.status(201).json('Confirmed');
+routes.post('/clientTypes/create', (req: express.Request, res: express.Response) => {
+    Connection.models.clientType.create({
+        typeName: req.query.name
+    }).then((clientType) => {
+        res.status(200).json({
+                status: 'Confirmed!',
+                description: 'Client type added',
+                result: clientType.toJSON(),
+        });
     });
 });
 

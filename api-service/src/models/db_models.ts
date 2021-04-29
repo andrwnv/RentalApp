@@ -1,34 +1,36 @@
 import { Sequelize, DataTypes } from 'sequelize';
+import Faker from 'faker';
+import _ from 'lodash';
 
 const Connection = new Sequelize(
-    'relay',
+    'coursework_db',
     'postgres',
-    'postgres',
+    '852456',
     {
         dialect: 'postgres',
-        host: 'localhost'
+        host: 'localhost',
+        port: 5432
     }
 );
 
 const TablesName = {
-    Client: 'client', // *
-    ClientType: 'clientType', // *
-    PlannedTrips: 'clientPlannedTrips', // *
-    ObjectReview: 'objectReview', // *
-    ClientReview: 'clientReview', // *
-    BookedObject: 'bookedObject', // *
-    UserBookedHistory: 'userBookedHistory', // *
-    RentedObject: 'rentedObject', // *
-    UserRentalHistory: 'userRentalHistory', // *
-    Object: 'object', // *
-    ObjectType: 'objectType', // *
-    AdditionalComfort: 'additionalComfort', // *
-    Street: 'street', // *
-    Country: 'country', // *
-    Locality: 'locality', // *
-    LocalityType: 'localityType' // *
+    Client: 'client',
+    ClientType: 'clientType',
+    PlannedTrips: 'clientPlannedTrips',
+    ObjectReview: 'objectReview',
+    ClientReview: 'clientReview',
+    BookedObject: 'bookedObject',
+    UserBookedHistory: 'userBookedHistory',
+    RentedObject: 'rentedObject',
+    UserRentalHistory: 'userRentalHistory',
+    Object: 'object',
+    ObjectType: 'objectType',
+    AdditionalComfort: 'additionalComfort',
+    Street: 'street',
+    Country: 'country',
+    Locality: 'locality',
+    LocalityType: 'localityType'
 };
-
 
 
 /* @brief: Data base tables. */
@@ -179,7 +181,7 @@ const UserRentalHistory = Connection.define(TablesName.UserRentalHistory, {
     }
 });
 
-const Object = Connection.define(TablesName.Object, {
+const RentalObject = Connection.define(TablesName.Object, {
     comfortProps: {
         type: DataTypes.JSON,
         allowNull: true
@@ -214,7 +216,7 @@ const Object = Connection.define(TablesName.Object, {
     },
     createMediaDate: {
         type: DataTypes.DATE,
-        allowNull:false
+        allowNull: false
     },
     updateMediaDate: {
         type: DataTypes.DATE,
@@ -234,14 +236,14 @@ const Object = Connection.define(TablesName.Object, {
     }
 });
 
-const ObjectType = Connection.define(TablesName.ObjectType, {
+const RentalObjectType = Connection.define(TablesName.ObjectType, {
     typeName: {
         type: DataTypes.STRING,
         allowNull: false
     }
 });
 
-const AdditionalComfort  = Connection.define(TablesName.AdditionalComfort , {
+const AdditionalComfort = Connection.define(TablesName.AdditionalComfort, {
     nameOfComfort: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -256,28 +258,28 @@ const AdditionalComfort  = Connection.define(TablesName.AdditionalComfort , {
     }
 });
 
-const Street = Connection.define(TablesName.Street , {
+const Street = Connection.define(TablesName.Street, {
     name: {
         type: DataTypes.TEXT,
         allowNull: false
     }
 });
 
-const Country = Connection.define(TablesName.Country , {
+const Country = Connection.define(TablesName.Country, {
     name: {
         type: DataTypes.TEXT,
         allowNull: false
     }
 });
 
-const Locality = Connection.define(TablesName.Locality , {
+const Locality = Connection.define(TablesName.Locality, {
     name: {
         type: DataTypes.TEXT,
         allowNull: false
     }
 });
 
-const LocalityType = Connection.define(TablesName.LocalityType , {
+const LocalityType = Connection.define(TablesName.LocalityType, {
     name: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -287,35 +289,35 @@ const LocalityType = Connection.define(TablesName.LocalityType , {
 
 /* @brief: Data base tables foreign keys. */
 
-Client.belongsTo(ClientType, {foreignKey: 'FK_clientType'});
+Client.belongsTo(ClientType, { foreignKey: 'FK_clientType' });
 
-PlannedTrips.belongsTo(Client, {foreignKey: 'FK_client'});
+PlannedTrips.belongsTo(Client, { foreignKey: 'FK_client' });
 
-ObjectReview.belongsTo(Client, {foreignKey: 'FK_client'});
-ObjectReview.belongsTo(Object, {foreignKey: 'FK_object'});
+ObjectReview.belongsTo(Client, { foreignKey: 'FK_client' });
+ObjectReview.belongsTo(RentalObject, { foreignKey: 'FK_object' });
 
-ClientReview.belongsTo(Client, {foreignKey: 'FK_landLord'});
-ClientReview.belongsTo(Client, {foreignKey: 'FK_client'});
+ClientReview.belongsTo(Client, { foreignKey: 'FK_landLord' });
+ClientReview.belongsTo(Client, { foreignKey: 'FK_client' });
 
-BookedObject.belongsTo(Client, {foreignKey: 'FK_client'});
-BookedObject.belongsTo(Object, {foreignKey: 'FK_object'});
+BookedObject.belongsTo(Client, { foreignKey: 'FK_client' });
+BookedObject.belongsTo(RentalObject, { foreignKey: 'FK_object' });
 
-UserBookedHistory.belongsTo(Client, {foreignKey: 'FK_client'});
-UserBookedHistory.belongsTo(Object, {foreignKey: 'FK_object'});
+UserBookedHistory.belongsTo(Client, { foreignKey: 'FK_client' });
+UserBookedHistory.belongsTo(RentalObject, { foreignKey: 'FK_object' });
 
-RentedObject.belongsTo(Client, {foreignKey: 'FK_client'});
-RentedObject.belongsTo(Object, {foreignKey: 'FK_object'});
+RentedObject.belongsTo(Client, { foreignKey: 'FK_client' });
+RentedObject.belongsTo(RentalObject, { foreignKey: 'FK_object' });
 
-UserRentalHistory.belongsTo(Object, {foreignKey: 'FK_object'});
+UserRentalHistory.belongsTo(RentalObject, { foreignKey: 'FK_object' });
 
-Object.belongsTo(Client, {foreignKey: 'FK_landLord'});
-Object.belongsTo(Country, {foreignKey: 'FK_country'});
-Object.belongsTo(Locality, {foreignKey: 'FK_locality'});
-Object.belongsTo(LocalityType, {foreignKey: 'FK_localityType'});
-Object.belongsTo(Street, {foreignKey: 'FK_street'});
-Object.belongsTo(ObjectType, {foreignKey: 'FK_objectType'});
+RentalObject.belongsTo(Client, { foreignKey: 'FK_landLord' });
+RentalObject.belongsTo(Country, { foreignKey: 'FK_country' });
+RentalObject.belongsTo(Locality, { foreignKey: 'FK_locality' });
+RentalObject.belongsTo(LocalityType, { foreignKey: 'FK_localityType' });
+RentalObject.belongsTo(Street, { foreignKey: 'FK_street' });
+RentalObject.belongsTo(RentalObjectType, { foreignKey: 'FK_objectType' });
 
-AdditionalComfort.belongsTo(BookedObject, {foreignKey: 'FK_bookingObject'});
-AdditionalComfort.belongsTo(RentedObject, {foreignKey: 'FK_rentObject'});
+AdditionalComfort.belongsTo(BookedObject, { foreignKey: 'FK_bookingObject' });
+AdditionalComfort.belongsTo(RentedObject, { foreignKey: 'FK_rentObject' });
 
 export default Connection;

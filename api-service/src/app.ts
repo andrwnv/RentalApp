@@ -9,11 +9,11 @@ const http = require('http');
 const server = express();
 const port: Number = 3080;
 
-server.use(bodyParser.json());
-
 server.use(bodyParser.urlencoded({
     extended: true,
 }));
+
+server.use(bodyParser.json());
 
 server.use(express.json());
 server.use(routes);
