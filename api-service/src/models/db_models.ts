@@ -85,7 +85,7 @@ const Client = Connection.define(TablesName.Client, {
     }
 });
 
-export const ClientType = Connection.define(TablesName.ClientType, {
+const ClientType = Connection.define(TablesName.ClientType, {
     typeName: {
         type: DataTypes.STRING,
         allowNull: false

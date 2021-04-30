@@ -1,7 +1,7 @@
 import express from 'express';
 import { SentMessageInfo } from 'nodemailer';
 
-import Connection, { ClientType } from '../models/db_models';
+import Connection from '../models/db_models';
 import { validationResult } from 'express-validator';
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
@@ -199,13 +199,15 @@ class UserController {
                     return;
                 }
 
-                const confirmResult = await user.update({
+                await user.update({
                     eMailConfirmed: true
                 });
 
                 res.status(200).json({
                     status: 'Success',
-                    data: 'E-Mail confirmed'
+                    data: {
+                        message: 'E-Mail confirmed',
+                    }
                 });
             }
             else {
