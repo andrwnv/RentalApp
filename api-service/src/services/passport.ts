@@ -1,13 +1,16 @@
 import { Strategy as JWTStrategy, ExtractJwt as ExtractJWT } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import passport from 'passport';
+import dotenv from 'dotenv';
 
 import Connection from '../models/db_models';
 import { generateMD5 } from '../utils/MD5_generator';
 
+dotenv.config();
+
 passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromHeader('token'),
-        secretOrKey: process.env.SECRET_KEY || 'vcAXc6qsFXbsA00v4nvAnWXZz0a5fe6'
+        secretOrKey: process.env.SECRET_KEY
     },
     async(jwtPayload, done) => {
         try {

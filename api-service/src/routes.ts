@@ -7,7 +7,6 @@ import passport from './services/passport';
 
 const routes = express.Router();
 
-
 // routes.get('/database/connection_status', (req: express.Request, res: express.Response) => {
 //     Connection.authenticate().then(() => {
 //         console.log('Connection has been established successfully.');

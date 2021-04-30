@@ -122,9 +122,9 @@ class UserController {
             const user = await Connection.models.clients.create(userData);
 
             sendMail({
-                from: 'admin@airbnb_clone.com',
+                from: `Rental App <${process.env.NODEMAILER_USER}>`,
                 to: userData.eMail,
-                subject: 'E-Mail confirm [AIRBNB CLONE]',
+                subject: 'E-Mail confirm [Rental App, NO REPLY]',
                 body: `Follow link for confirm <a href="http://localhost:${process.env.PORT || 3080}/client/signup/verify?hash=${userData.confirmHash}"> FOLLOW ME! </a>`,
                 callback: (err: Error | null, info: SentMessageInfo) => {
                     err ? console.log(err) : console.info(info);
