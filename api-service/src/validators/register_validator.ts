@@ -15,11 +15,11 @@ export const RegisterValidate = [
             max: 20
         }).withMessage('Incorrect firstName length! Minimum length 2 char. Maximum length 20 char.'),
 
-    body('middleName')
+    body('middleName').optional({ nullable: true })
         .isString().withMessage('Incorrect middleName!')
         .isLength({
-            min: 0,
-            max: 20
+          min: 0,
+          max: 20
         }).withMessage('Incorrect middleName length! Minimum length 0 char. Maximum length 20 char.'),
 
     body('lastName')
