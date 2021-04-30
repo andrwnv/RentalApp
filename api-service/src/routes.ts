@@ -35,6 +35,7 @@ const routes = express.Router();
 //     });
 // });
 
+
 // User routes.
 
 routes.get('/', (_, res: express.Response) => {
@@ -43,15 +44,14 @@ routes.get('/', (_, res: express.Response) => {
 
 routes.get('/client/all', UserCtrl.index);
 routes.post('/client/login',
-    passport.authenticate('local',
-        ),
+    passport.authenticate('local'),
     UserCtrl.loginConfirmed);
-
-routes.get('/client/login/success', )
 
 routes.get('/client/signup/verify', UserCtrl.verify);
 routes.post('/client/signup', RegisterValidate, UserCtrl.create);
 routes.delete('/client/delete', UserCtrl.delete);
+routes.get('/client/current_user', passport.authenticate('jwt', { session: false }), UserCtrl.getCurrentUserInfo);
 routes.get('/client/:id', UserCtrl.show);
+
 
 export default routes;

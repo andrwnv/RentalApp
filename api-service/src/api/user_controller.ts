@@ -242,8 +242,32 @@ class UserController {
                     client_data: req.user,
                     token: jwt.sign({ data: req.user },
                         process.env.SECRET_KEY || "SomeSecretKey",
-                        {expiresIn: '30d'})
+                        {expiresIn: '30 days'})
                 }
+            });
+
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async getCurrentUserInfo(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            if (req.user == undefined) {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'Cant find client data'
+                })
+
+                return;
+            }
+
+            res.status(200).json({
+                status: 'Success',
+                data: req.user
             });
 
         } catch(err) {
