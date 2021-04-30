@@ -1,13 +1,13 @@
 import express from 'express';
 import { SentMessageInfo } from 'nodemailer';
 
-import Connection from '../models/db_models';
+import Connection, { ClientType } from '../models/db_models';
 import { validationResult } from 'express-validator';
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
 
 
-class User_controller {
+class UserController {
     async index(_: express.Request, res: express.Response) {
         try {
             const users = await Connection.models.clients.findAll();
@@ -16,6 +16,45 @@ class User_controller {
                 status: 'Success',
                 data: users
             });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async show(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            const userId = req.params.id;
+
+            const user = await Connection.models.clients.findOne({
+                where: {
+                    id: userId
+                },
+                attributes: {
+                    exclude: ['password', 'confirmHash', 'FK_clientType'],
+                },
+                include: [{
+                    model: Connection.models.clientType,
+                    required: true,
+                    attributes: ['typeName']
+                }]
+            });
+
+            if ( user ) {
+                res.status(200).json({
+                    status: 'Success',
+                    data: user
+                });
+            }
+            else {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'User not found!'
+                });
+            }
+
         } catch(err) {
             res.status(500).json({
                 status: 'Error',
@@ -37,6 +76,34 @@ class User_controller {
                 return;
             }
 
+            const isUniqueUser = await Connection.models.clients.count({
+                where: {
+                    eMail: req.body.eMail
+                }
+            });
+
+            if ( isUniqueUser != 0 ) {
+                res.status(409).json({
+                    status: 'Error',
+                    data: 'User already exist!'
+                });
+
+                return;
+            }
+
+            const clientType = await Connection.models.clientType.findOne({
+                where: { typeName: 'default_user' }
+            });
+
+            if ( !clientType ) {
+                res.status(500).json({
+                    status: 'Error',
+                    data: 'Cant find client type!'
+                });
+
+                return;
+            }
+
             const userData = {
                 firstName: req.body.firstName,
                 middleName: req.body.middleName,
@@ -45,9 +112,10 @@ class User_controller {
                 birthDay: req.body.birthDay,
                 phoneNumber: req.body.phoneNumber,
                 password: req.body.password,
-                confirmHash: generateMD5(process.env.SECRET_KEY || Math.random().toString()),
+                confirmHash: generateMD5(process.env.SECRET_KEY + req.body.eMail),
                 photoLink: 'default_pic',
                 rating: 5,
+                FK_clientType: clientType.get('id')
             };
 
             const user = await Connection.models.clients.create(userData);
@@ -62,7 +130,7 @@ class User_controller {
                 }
             });
 
-            res.status(200).json({
+            res.status(201).json({
                 status: 'Success',
                 data: user
             })
@@ -79,8 +147,80 @@ class User_controller {
     }
 
     async delete(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            const userEMail = req.query.eMail;
 
+            const user = await Connection.models.clients.findOne({
+                where: {
+                    eMail: userEMail
+                }
+            });
+
+            if ( user ) {
+                await user.destroy();
+
+                res.status(200).json({
+                    status: 'Success',
+                    data: 'User deleted!'
+                });
+            }
+            else {
+                res.status(400).json({
+                    status: 'Success',
+                    data: 'User doesnt exist!'
+                });
+            }
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async verify(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            const userHash = req.query.hash;
+
+            const user = await Connection.models.clients.findOne({
+                where: {
+                    confirmHash: userHash
+                }
+            });
+
+            if ( user ) {
+                const isUserConfirmed = user.get('eMailConfirmed');
+
+                if ( isUserConfirmed ) {
+                    res.status(200).json({
+                        status: 'Success',
+                        data: 'E-Mail already confirmed!'
+                    });
+                    return;
+                }
+
+                const confirmResult = await user.update({
+                    eMailConfirmed: true
+                });
+
+                res.status(200).json({
+                    status: 'Success',
+                    data: 'E-Mail confirmed'
+                });
+            }
+            else {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'User doesnt exist!'
+                });
+            }
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
     }
 }
 
-export const UserCtrl = new User_controller();
+export const UserCtrl = new UserController();

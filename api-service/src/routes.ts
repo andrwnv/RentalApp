@@ -35,8 +35,11 @@ routes.post('/clientTypes/create', (req: express.Request, res: express.Response)
 
 // User routes.
 routes.get('/client/all', UserCtrl.index);
-routes.post('/client', RegisterValidate, UserCtrl.create);
+routes.get('/client/:id', UserCtrl.show);
+routes.post('/client/signup', RegisterValidate, UserCtrl.create);
+routes.get('/client/signup/verify', UserCtrl.verify);
+routes.delete('/client/delete', UserCtrl.delete);
+
 // routes.patch('/client', UserCtrl.update);
-// routes.delete('/client', UserCtrl.delete);
 
 export default routes;
