@@ -85,7 +85,7 @@ const Client = Connection.define(TablesName.Client, {
     }
 });
 
-const ClientType = Connection.define(TablesName.ClientType, {
+export const ClientType = Connection.define(TablesName.ClientType, {
     typeName: {
         type: DataTypes.STRING,
         allowNull: false
@@ -297,35 +297,141 @@ const LocalityType = Connection.define(TablesName.LocalityType, {
 
 /* @brief: Data base tables foreign keys. */
 
-Client.belongsTo(ClientType, { foreignKey: 'FK_clientType' });
+Client.belongsTo(ClientType, {
+    foreignKey: {
+        name: 'FK_clientType',
+        allowNull: false
+    }
+});
 
-PlannedTrips.belongsTo(Client, { foreignKey: 'FK_client' });
+PlannedTrips.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+         allowNull: false
+    }
+});
 
-ObjectReview.belongsTo(Client, { foreignKey: 'FK_client' });
-ObjectReview.belongsTo(RentalObject, { foreignKey: 'FK_object' });
+ObjectReview.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+        allowNull: false
+    }
+});
 
-ClientReview.belongsTo(Client, { foreignKey: 'FK_landLord' });
-ClientReview.belongsTo(Client, { foreignKey: 'FK_client' });
+ObjectReview.belongsTo(RentalObject, {
+    foreignKey: {
+        name: 'FK_object',
+         allowNull: false
+    }
+});
 
-BookedObject.belongsTo(Client, { foreignKey: 'FK_client' });
-BookedObject.belongsTo(RentalObject, { foreignKey: 'FK_object' });
+ClientReview.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_landLord',
+         allowNull: false
+    }
+});
+ClientReview.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+         allowNull: false
+    }
+});
 
-UserBookedHistory.belongsTo(Client, { foreignKey: 'FK_client' });
-UserBookedHistory.belongsTo(RentalObject, { foreignKey: 'FK_object' });
+BookedObject.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+         allowNull: false
+    }
+});
+BookedObject.belongsTo(RentalObject, {
+    foreignKey: {
+        name: 'FK_object',
+         allowNull: false
+    }
+});
 
-RentedObject.belongsTo(Client, { foreignKey: 'FK_client' });
-RentedObject.belongsTo(RentalObject, { foreignKey: 'FK_object' });
+UserBookedHistory.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+         allowNull: false
+    }
+});
+UserBookedHistory.belongsTo(RentalObject, {
+    foreignKey: {
+        name: 'FK_object',
+         allowNull: false
+    }
+});
 
-UserRentalHistory.belongsTo(RentalObject, { foreignKey: 'FK_object' });
+RentedObject.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+         allowNull: false
+    }
+});
+RentedObject.belongsTo(RentalObject, {
+    foreignKey: {
+        name: 'FK_object',
+         allowNull: false
+    }
+});
 
-RentalObject.belongsTo(Client, { foreignKey: 'FK_landLord' });
-RentalObject.belongsTo(Country, { foreignKey: 'FK_country' });
-RentalObject.belongsTo(Locality, { foreignKey: 'FK_locality' });
-RentalObject.belongsTo(LocalityType, { foreignKey: 'FK_localityType' });
-RentalObject.belongsTo(Street, { foreignKey: 'FK_street' });
-RentalObject.belongsTo(RentalObjectType, { foreignKey: 'FK_objectType' });
+UserRentalHistory.belongsTo(RentalObject, {
+    foreignKey: {
+        name: 'FK_object',
+         allowNull: false
+    }
+});
 
-AdditionalComfort.belongsTo(BookedObject, { foreignKey: 'FK_bookingObject' });
-AdditionalComfort.belongsTo(RentedObject, { foreignKey: 'FK_rentObject' });
+RentalObject.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_landLord',
+         allowNull: false
+    }
+});
+RentalObject.belongsTo(Country, {
+    foreignKey: {
+        name: 'FK_country',
+         allowNull: false
+    }
+});
+RentalObject.belongsTo(Locality, {
+    foreignKey: {
+        name: 'FK_locality',
+         allowNull: false
+    }
+});
+RentalObject.belongsTo(LocalityType, {
+    foreignKey: {
+        name: 'FK_localityType',
+         allowNull: false
+    }
+});
+RentalObject.belongsTo(Street, {
+    foreignKey: {
+        name: 'FK_street',
+         allowNull: false
+    }
+});
+RentalObject.belongsTo(RentalObjectType, {
+    foreignKey: {
+        name: 'FK_objectType',
+         allowNull: false
+    }
+});
+
+AdditionalComfort.belongsTo(BookedObject, {
+    foreignKey: {
+        name: 'FK_bookingObject',
+         allowNull: false
+    }
+});
+AdditionalComfort.belongsTo(RentedObject, {
+    foreignKey: {
+        name: 'FK_rentObject',
+         allowNull: false
+    }
+});
 
 export default Connection;
