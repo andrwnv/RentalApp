@@ -240,7 +240,9 @@ class UserController {
                 status: 'Success',
                 data: {
                     client_data: req.user,
-                    token: jwt.sign({ data: req.user }, process.env.SECRET_KEY || "SomeSecretKey")
+                    token: jwt.sign({ data: req.user },
+                        process.env.SECRET_KEY || "SomeSecretKey",
+                        {expiresIn: '30d'})
                 }
             });
 
