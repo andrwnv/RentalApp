@@ -111,7 +111,7 @@ class UserController {
                 eMail: req.body.eMail,
                 birthDay: req.body.birthDay,
                 phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
+                password: generateMD5(process.env.SECRET_KEY + req.body.password),
                 confirmHash: generateMD5(process.env.SECRET_KEY + req.body.eMail),
                 photoLink: 'default_pic',
                 rating: 5,
