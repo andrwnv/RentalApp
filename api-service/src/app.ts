@@ -1,5 +1,6 @@
 import routes from './routes';
 import dotenv from 'dotenv';
+import passport from 'passport';
 
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
@@ -16,8 +17,9 @@ server.use(bodyParser.urlencoded({
     extended: true,
 }));
 
-server.use(bodyParser.json());
+server.use(passport.initialize());
 
+server.use(bodyParser.json());
 server.use(express.json());
 server.use(routes);
 

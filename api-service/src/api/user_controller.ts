@@ -1,8 +1,9 @@
 import express from 'express';
 import { SentMessageInfo } from 'nodemailer';
+import jwt from 'jsonwebtoken';
 
 import Connection from '../models/db_models';
-import { validationResult } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
 
@@ -216,6 +217,33 @@ class UserController {
                     data: 'User doesnt exist!'
                 });
             }
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async loginConfirmed(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            if (req.user == undefined) {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'Cant find client data'
+                })
+
+                return;
+            }
+
+            res.status(200).json({
+                status: 'Success',
+                data: {
+                    client_data: req.user,
+                    token: jwt.sign({ data: req.user }, process.env.SECRET_KEY || "SomeSecretKey")
+                }
+            });
+
         } catch(err) {
             res.status(500).json({
                 status: 'Error',
