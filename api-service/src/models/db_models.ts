@@ -14,7 +14,7 @@ const Connection = new Sequelize(
 );
 
 const TablesName = {
-    Client: 'client',
+    Client: 'clients',
     ClientType: 'clientType',
     PlannedTrips: 'clientPlannedTrips',
     ObjectReview: 'objectReview',
@@ -63,6 +63,10 @@ const Client = Connection.define(TablesName.Client, {
             isEmail: true
         }
     },
+    confirmHash: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
     eMailConfirmed: {
         type: DataTypes.BOOLEAN,
         allowNull: true
@@ -73,6 +77,10 @@ const Client = Connection.define(TablesName.Client, {
     },
     rating: {
         type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    password: {
+        type: DataTypes.TEXT,
         allowNull: false
     }
 });
