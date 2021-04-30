@@ -1,10 +1,12 @@
 import express from 'express';
 
 import Connection from './models/db_models';
+import { UserCtrl } from './api/user_controller';
+import { RegisterValidate } from './validators/register_validator';
 
 const routes = express.Router();
 
-routes.get('/database/connection_status', (req, res) => {
+routes.get('/database/connection_status', (req: express.Request, res: express.Response) => {
     Connection.authenticate().then(() => {
         console.log('Connection has been established successfully.');
         res.status(200).json('ok');
@@ -30,5 +32,11 @@ routes.post('/clientTypes/create', (req: express.Request, res: express.Response)
         });
     });
 });
+
+// User routes.
+routes.get('/client/all', UserCtrl.index);
+routes.post('/client', RegisterValidate, UserCtrl.create);
+// routes.patch('/client', UserCtrl.update);
+// routes.delete('/client', UserCtrl.delete);
 
 export default routes;
