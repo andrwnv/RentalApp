@@ -1,10 +1,9 @@
 import express from 'express';
 
-import Connection from './models/db_models';
+// import Connection from './models/db_models';
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
 import passport from './services/passport';
-import exp from 'node:constants';
 
 const routes = express.Router();
 
