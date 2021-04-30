@@ -1,9 +1,11 @@
 import express from 'express';
+import multer from 'multer';
 
 // import Connection from './models/db_models';
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
 import passport from './services/passport';
+import { UploadFileCtrl } from './api/upload_files_controller';
 
 const routes = express.Router();
 
@@ -52,5 +54,14 @@ routes.delete('/client/delete', UserCtrl.delete);
 routes.get('/client/current_user', passport.authenticate('jwt', { session: false }), UserCtrl.getCurrentUserInfo);
 routes.get('/client/:id', UserCtrl.show);
 
+
+// Upload routes.
+const store = multer.memoryStorage();
+const upload = multer({
+    dest: 'uploads/',
+    storage: store
+});
+
+routes.post('/client/upload', upload.single('avatar'), passport.authenticate('jwt', { session: false }), UploadFileCtrl.uploadImage);
 
 export default routes;
