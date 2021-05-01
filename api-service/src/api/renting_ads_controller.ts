@@ -75,7 +75,7 @@ class RentingAdsController {
                 houseNumber: req.body.houseNumber,
             };
 
-            const _newAd = await Connection.models.object.create(adData);
+            await Connection.models.object.create(adData);
 
             res.status(200).json({
                 status: 'Success',
