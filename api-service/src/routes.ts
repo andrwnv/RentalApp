@@ -4,6 +4,7 @@ import multer from 'multer';
 // import Connection from './models/db_models';
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
+import { NewRentAdValidate } from './validators/new_rent_ad_validator';
 import { UploadFileCtrl } from './api/upload_files_controller';
 import { RentingAdsCtrl } from './api/renting_ads_controller';
 
@@ -68,10 +69,10 @@ routes.post('/client/upload_avatar', upload.single('avatar'), passport.authentic
     UploadFileCtrl.uploadUserAvatar);
 
 // Renting ads routes.
-routes.get('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
-routes.post('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.newAds);
-routes.delete('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);
-routes.patch('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.update);
+routes.get('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
+routes.post('/rent_ads', passport.authenticate('jwt', { session: false }), NewRentAdValidate, RentingAdsCtrl.newAd);
+routes.delete('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);
+routes.patch('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.update);
 routes.get('/rent_ads/user_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.userAds);
 
 export default routes;

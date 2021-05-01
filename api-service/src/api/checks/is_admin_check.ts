@@ -1,6 +1,6 @@
 import express from 'express';
 
-import Client from '../../models/client_type';
+import Client from '../../models/types/client_type';
 
 const isAdminUser = (req: express.Request, res: express.Response): boolean => {
     const reqUser: Client = req.user as Client;

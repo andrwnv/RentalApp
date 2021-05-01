@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import cloudinary from '../services/cloudinary';
 import Connection from '../models/db_models';
-import Client from '../models/client_type';
+import Client from '../models/types/client_type';
 
 class UploadFilesController {
     async uploadUserAvatar(req: express.Request, res: express.Response) {
