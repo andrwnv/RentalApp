@@ -62,6 +62,7 @@ const upload = multer({
     storage: store
 });
 
-routes.post('/client/upload', upload.single('avatar'), passport.authenticate('jwt', { session: false }), UploadFileCtrl.uploadImage);
+routes.post('/client/upload_avatar', upload.single('avatar'), passport.authenticate('jwt', { session: false }),
+    UploadFileCtrl.uploadUserAvatar);
 
 export default routes;

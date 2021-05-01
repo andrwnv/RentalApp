@@ -1,10 +1,11 @@
 import express from 'express';
 import multer from 'multer';
 import cloudinary from '../services/cloudinary';
+import Connection from '../models/db_models';
 
 
 class UploadFilesController {
-    async uploadImage(req: express.Request, res: express.Response) {
+    async uploadUserAvatar(req: express.Request, res: express.Response) {
         try {
             if (req.user == undefined) {
                 res.status(404).json({
@@ -20,7 +21,7 @@ class UploadFilesController {
             //@ts-ignore
             const userID = req.user.id;
 
-            cloudinary.uploader.upload_stream({public_id: `user_avatar_${userID}`}, (err, result) => {
+            cloudinary.uploader.upload_stream({public_id: `user_avatar_${userID}`}, async (err, result) => {
                 if ( err || !result ) {
                     return res.status(500).json({
                         status: 'Error',
@@ -28,10 +29,22 @@ class UploadFilesController {
                     });
                 }
 
+                const user = await Connection.models.clients.findOne({
+                    where: {
+                        id: userID
+                    }
+                });
+
+                if ( user ) {
+                    await user.update({
+                        photoLink: result.url
+                    });
+                }
+
                 res.status(201).json({
                     status: 'Success',
                     data: {
-                        title: 'File loaded to cloudinary',
+                        title: 'File loaded to cloudinary. Avatar successfully changed! ',
                         url: result.url,
                         width: result.width,
                         height: result.height,
