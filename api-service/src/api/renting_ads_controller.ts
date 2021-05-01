@@ -1,18 +1,20 @@
 import express from 'express';
 
 import Connection from '../models/db_models';
-import { body, validationResult } from 'express-validator';
-
+import isAdminUser from './checks/is_admin_check';
 
 class RentingAdsController {
-    async index(_: express.Request, res: express.Response) {
+    async index(req: express.Request, res: express.Response) {
         try {
-            const rentedObjects = await Connection.models.object.findAll();
+            if ( isAdminUser(req, res) ) {
+                const rentedObjects = await Connection.models.object.findAll();
 
-            res.status(200).json({
-                status: 'Success',
-                data: rentedObjects
-            });
+                res.status(200).json({
+                    status: 'Success',
+                    data: rentedObjects
+                });
+            }
+
         } catch(err) {
             res.status(500).json({
                 status: 'Error',

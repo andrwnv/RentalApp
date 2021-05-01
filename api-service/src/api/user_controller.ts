@@ -1,11 +1,11 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { SentMessageInfo } from 'nodemailer';
+import { validationResult } from 'express-validator';
 
 import Connection from '../models/db_models';
-import Client from '../models/client_type';
+import isAdminUser from './checks/is_admin_check';
 
-import { body, validationResult } from 'express-validator';
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
 
@@ -13,32 +13,14 @@ import { sendMail } from '../utils/send_mail';
 class UserController {
     async index(req: express.Request, res: express.Response) {
         try {
-            const reqUser: Client = req.user as Client;
+            if ( isAdminUser(req, res) ) {
+                const users = await Connection.models.clients.findAll();
 
-            if (!reqUser) {
-                res.status(400).json({
-                    status: 'Error',
-                    data: 'No req user data!'
+                res.status(200).json({
+                    status: 'Success',
+                    data: users
                 });
-
-                return;
             }
-
-            if (reqUser.clientType.typeName !== 'admin') {
-                res.status(403).json({
-                    status: 'Error',
-                    data: 'Request forbidden!'
-                });
-
-                return;
-            }
-
-            const users = await Connection.models.clients.findAll();
-
-            res.status(200).json({
-                status: 'Success',
-                data: users
-            });
         } catch(err) {
             res.status(500).json({
                 status: 'Error',
@@ -250,7 +232,7 @@ class UserController {
 
     async loginConfirmed(req: express.Request, res: express.Response): Promise<void> {
         try {
-            if (req.user == undefined) {
+            if ( req.user == undefined ) {
                 res.status(404).json({
                     status: 'Error',
                     data: 'Cant find client data'
@@ -264,8 +246,8 @@ class UserController {
                 data: {
                     client_data: req.user,
                     token: jwt.sign({ data: req.user },
-                        process.env.SECRET_KEY || "SomeSecretKey",
-                        {expiresIn: '30 days'})
+                        process.env.SECRET_KEY || 'SomeSecretKey',
+                        { expiresIn: '30 days' })
                 }
             });
 
@@ -279,7 +261,7 @@ class UserController {
 
     async getCurrentUserInfo(req: express.Request, res: express.Response): Promise<void> {
         try {
-            if (req.user == undefined) {
+            if ( req.user == undefined ) {
                 res.status(404).json({
                     status: 'Error',
                     data: 'Cant find client data'
