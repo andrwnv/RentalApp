@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import cloudinary from '../services/cloudinary';
 import Connection from '../models/db_models';
-
+import Client from '../models/client_type';
 
 class UploadFilesController {
     async uploadUserAvatar(req: express.Request, res: express.Response) {
@@ -17,9 +17,7 @@ class UploadFilesController {
             }
 
             const file = req.file;
-
-            //@ts-ignore
-            const userID = req.user.id;
+            const userID = (req.user as Client).id;
 
             cloudinary.uploader.upload_stream({public_id: `user_avatar_${userID}`}, async (err, result) => {
                 if ( err || !result ) {

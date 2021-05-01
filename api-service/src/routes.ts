@@ -4,8 +4,10 @@ import multer from 'multer';
 // import Connection from './models/db_models';
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
-import passport from './services/passport';
 import { UploadFileCtrl } from './api/upload_files_controller';
+import { RentingAdsCtrl } from './api/renting_ads_controller';
+
+import passport from './services/passport';
 
 const routes = express.Router();
 
@@ -43,7 +45,7 @@ routes.get('/', (_, res: express.Response) => {
     res.status(200).json('Hello world!');
 })
 
-routes.get('/client/all', UserCtrl.index);
+routes.get('/client/all', passport.authenticate('jwt', { session: false }), UserCtrl.index);
 routes.post('/client/login',
     passport.authenticate('local'),
     UserCtrl.loginConfirmed);
@@ -64,5 +66,12 @@ const upload = multer({
 
 routes.post('/client/upload_avatar', upload.single('avatar'), passport.authenticate('jwt', { session: false }),
     UploadFileCtrl.uploadUserAvatar);
+
+// Renting ads routes.
+routes.get('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
+routes.post('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.newAds);
+routes.delete('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);
+routes.patch('/rent_ads',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.update);
+routes.get('/rent_ads/user_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.userAds);
 
 export default routes;

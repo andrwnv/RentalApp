@@ -307,7 +307,7 @@ Client.belongsTo(ClientType, {
 PlannedTrips.belongsTo(Client, {
     foreignKey: {
         name: 'FK_client',
-         allowNull: false
+        allowNull: false
     }
 });
 
@@ -321,116 +321,116 @@ ObjectReview.belongsTo(Client, {
 ObjectReview.belongsTo(RentalObject, {
     foreignKey: {
         name: 'FK_object',
-         allowNull: false
+        allowNull: false
     }
 });
 
 ClientReview.belongsTo(Client, {
     foreignKey: {
         name: 'FK_landLord',
-         allowNull: false
+        allowNull: false
     }
 });
 ClientReview.belongsTo(Client, {
     foreignKey: {
         name: 'FK_client',
-         allowNull: false
+        allowNull: false
     }
 });
 
 BookedObject.belongsTo(Client, {
     foreignKey: {
         name: 'FK_client',
-         allowNull: false
+        allowNull: false
     }
 });
 BookedObject.belongsTo(RentalObject, {
     foreignKey: {
         name: 'FK_object',
-         allowNull: false
+        allowNull: false
     }
 });
 
 UserBookedHistory.belongsTo(Client, {
     foreignKey: {
         name: 'FK_client',
-         allowNull: false
+        allowNull: false
     }
 });
 UserBookedHistory.belongsTo(RentalObject, {
     foreignKey: {
         name: 'FK_object',
-         allowNull: false
+        allowNull: false
     }
 });
 
 RentedObject.belongsTo(Client, {
     foreignKey: {
         name: 'FK_client',
-         allowNull: false
+        allowNull: false
     }
 });
 RentedObject.belongsTo(RentalObject, {
     foreignKey: {
         name: 'FK_object',
-         allowNull: false
+        allowNull: false
     }
 });
 
 UserRentalHistory.belongsTo(RentalObject, {
     foreignKey: {
         name: 'FK_object',
-         allowNull: false
+        allowNull: false
     }
 });
 
 RentalObject.belongsTo(Client, {
     foreignKey: {
         name: 'FK_landLord',
-         allowNull: false
+        allowNull: false
     }
 });
 RentalObject.belongsTo(Country, {
     foreignKey: {
         name: 'FK_country',
-         allowNull: false
+        allowNull: false
     }
 });
 RentalObject.belongsTo(Locality, {
     foreignKey: {
         name: 'FK_locality',
-         allowNull: false
+        allowNull: false
     }
 });
 RentalObject.belongsTo(LocalityType, {
     foreignKey: {
         name: 'FK_localityType',
-         allowNull: false
+        allowNull: false
     }
 });
 RentalObject.belongsTo(Street, {
     foreignKey: {
         name: 'FK_street',
-         allowNull: false
+        allowNull: false
     }
 });
 RentalObject.belongsTo(RentalObjectType, {
     foreignKey: {
         name: 'FK_objectType',
-         allowNull: false
+        allowNull: false
     }
 });
 
 AdditionalComfort.belongsTo(BookedObject, {
     foreignKey: {
         name: 'FK_bookingObject',
-         allowNull: false
+        allowNull: false
     }
 });
 AdditionalComfort.belongsTo(RentedObject, {
     foreignKey: {
         name: 'FK_rentObject',
-         allowNull: false
+        allowNull: false
     }
 });
 

@@ -1,16 +1,38 @@
 import express from 'express';
-import { SentMessageInfo } from 'nodemailer';
 import jwt from 'jsonwebtoken';
+import { SentMessageInfo } from 'nodemailer';
 
 import Connection from '../models/db_models';
+import Client from '../models/client_type';
+
 import { body, validationResult } from 'express-validator';
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
 
 
 class UserController {
-    async index(_: express.Request, res: express.Response) {
+    async index(req: express.Request, res: express.Response) {
         try {
+            const reqUser: Client = req.user as Client;
+
+            if (!reqUser) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'No req user data!'
+                });
+
+                return;
+            }
+
+            if (reqUser.clientType.typeName !== 'admin') {
+                res.status(403).json({
+                    status: 'Error',
+                    data: 'Request forbidden!'
+                });
+
+                return;
+            }
+
             const users = await Connection.models.clients.findAll();
 
             res.status(200).json({
@@ -143,6 +165,7 @@ class UserController {
         }
     }
 
+    // TODO: update req.
     async update(req: express.Request, res: express.Response): Promise<void> {
 
     }
