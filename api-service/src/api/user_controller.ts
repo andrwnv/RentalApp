@@ -114,7 +114,7 @@ class UserController {
                 phoneNumber: req.body.phoneNumber,
                 password: generateMD5(process.env.SECRET_KEY + req.body.password),
                 confirmHash: generateMD5(process.env.SECRET_KEY + req.body.eMail),
-                photoLink: 'default_pic',
+                photoLink: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
                 rating: 5,
                 FK_clientType: clientType.get('id')
             };
