@@ -69,10 +69,12 @@ routes.post('/client/upload_avatar', upload.single('avatar'), passport.authentic
     UploadFileCtrl.uploadUserAvatar);
 
 // Renting ads routes.
-routes.get('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
+routes.get('/rent_ads/all', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
 routes.post('/rent_ads', passport.authenticate('jwt', { session: false }), NewRentAdValidate, RentingAdsCtrl.newAd);
 routes.delete('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);
 routes.patch('/rent_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.update);
 routes.get('/rent_ads/user_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.userAds);
+routes.post('/rent_ads/upload_photos', passport.authenticate('jwt', { session: false }),
+    upload.array('adImages', 10), UploadFileCtrl.uploadAdPhotos);
 
 export default routes;

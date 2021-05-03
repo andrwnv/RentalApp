@@ -64,7 +64,7 @@ class RentingAdsController {
                 rating: 0,
                 createDate: currentDate.toISOString(),
                 updateDate: currentDate.toISOString(),
-                mediaLinks: {},
+                mediaLinks: { urls: [] },
                 createMediaDate: currentDate.toISOString(),
                 updateMediaDate: currentDate.toISOString(),
                 FK_country: country.get('id'),
@@ -75,11 +75,12 @@ class RentingAdsController {
                 houseNumber: req.body.houseNumber,
             };
 
-            await Connection.models.object.create(adData);
+            const _newAd = await Connection.models.object.create(adData);
 
             res.status(200).json({
                 status: 'Success',
                 data: {
+                    item_id: _newAd.get('id'),
                     landlord: {
                         id: landlord.id,
                         fullName: `${landlord.firstName} ${landlord.lastName}`,
