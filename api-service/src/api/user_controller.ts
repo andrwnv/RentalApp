@@ -11,7 +11,7 @@ import { sendMail } from '../utils/send_mail';
 
 
 class UserController {
-    async index(req: express.Request, res: express.Response) {
+    async index(req: express.Request, res: express.Response): Promise<void> {
         try {
             if ( isAdminUser(req, res) ) {
                 const users = await Connection.models.clients.findAll();
