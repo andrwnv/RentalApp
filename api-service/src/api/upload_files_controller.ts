@@ -1,11 +1,9 @@
 import express from 'express';
-import _ from 'lodash';
 
+import { generateMD5 } from '../utils/MD5_generator';
+import Client from '../models/types/client_type';
 import cloudinary from '../services/cloudinary';
 import Connection from '../models/db_models';
-import Client from '../models/types/client_type';
-import { stringify } from 'querystring';
-import { generateMD5 } from '../utils/MD5_generator';
 
 
 class UploadFilesController {
