@@ -13,6 +13,8 @@ import Cookies from '../../services/cookies';
 
 export default function Dashboard() {
     const [data, setData] = useState();
+    const [isEndData, setIsEndData] = useState(false);
+    const [buttonText, setButtonText] = useState('Загрузить еще...');
 
     localStorage.setItem('countForLoad', '' + 4);
     localStorage.setItem('currentPaddingForLoad', '' + 0);
@@ -25,11 +27,17 @@ export default function Dashboard() {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            if (data === undefined) {
-                setData(res.data.data);
+            const loadedData = res.data.data;
+
+            if (loadedData.length === 0) {
+                setIsEndData(true);
+                setButtonText('Больше нет...');
             } else {
-                setData(data.concat(res.data.data));
+                setIsEndData(false);
+                setButtonText('Загрузить еще...');
             }
+
+            data === undefined ? setData(loadedData) : setData(data.concat(loadedData));
         });
     };
 
@@ -54,7 +62,7 @@ export default function Dashboard() {
         });
     }
 
-    let resJSX = [];
+    const resJSX = [];
     jsxData.forEach(arr => {
         resJSX.push(
             <Row className = "row justify-content-center" style = {{
@@ -66,7 +74,6 @@ export default function Dashboard() {
     })
 
     const loadMoreEvent = (_) => {
-
         const padding = +localStorage.getItem('currentPaddingForLoad') + data.length;
         getAdsData(localStorage.getItem('countForLoad'), padding);
 
@@ -84,8 +91,11 @@ export default function Dashboard() {
             </div>
 
             <Container style = {{width: '15%', marginBottom: '20px', marginTop: '10px'}}>
-                <Button variant = "outline-primary" onClick = {loadMoreEvent}>
-                    Загрузить еще...
+                <Button variant = "outline-primary"
+                        onClick = {loadMoreEvent}
+                        disabled={isEndData}
+                >
+                    {buttonText}
                 </Button>
             </Container>
         </div>
