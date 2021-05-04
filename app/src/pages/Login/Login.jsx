@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-// import api from '../../services/api';
+import api from '../../services/api';
 
 import logoSmall from '../../assets/logosmall.png';
 import './Login.css';
@@ -9,34 +9,41 @@ export default function Login({history}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    async function handleSubmitLogin(event) {
-        // e.preventDefault();
-        // if (!email) {
-        //   return alert("");
-        // }
-        //
-        // const response = await api.post("/sessions", { email });
-        // const { _id } = response.data;
-        //
-        // localStorage.setItem("user", _id);
-        // localStorage.setItem("name", name);
+    let _status = 0;
 
-        history.push('/dashboard');
+    async function handleSubmitLogin(event) {
+        event.preventDefault();
+
+        const data = {
+            eMail: email,
+            password: password
+        };
+
+        try {
+            const res = await api.post('http://localhost:3080/client/login', data);
+            _status = res.status;
+
+            localStorage.setItem('token', res.data.data.token)
+        } catch (err) {
+            if (err.response) {
+                _status = err.response.status;
+            }
+        }
+
+        console.log(_status);
+
+        if (_status >= 400 && _status < 500) {
+            alert('Неправильно введены данные или пользователя не существует!');
+            return;
+        }
+
+        if (_status === 200) {
+            history.push('/dashboard');
+        }
     }
 
     async function handleSubmitReg(event) {
         event.preventDefault();
-
-        // if (!email) {
-        //   return alert("");
-        // }
-        //
-        // const response = await api.post("/sessions", { email });
-        // const { _id } = response.data;
-        //
-        // localStorage.setItem("user", _id);
-        // localStorage.setItem("name", name);
-
         history.push('/register');
     }
 

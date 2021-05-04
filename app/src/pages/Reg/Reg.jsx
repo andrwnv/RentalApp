@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-// import api from '../../services/api';
+import api from '../../services/api';
 
 import logoSmall from '../../assets/logosmall.png';
 import './Reg.css';
@@ -12,20 +12,44 @@ export default function Reg({history}) {
     const [midName, setMidName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    let _status = 0;
+
     async function handleSubmit(event) {
         event.preventDefault();
 
-        // if (!email) {
-        //   return alert("");
-        // }
-        //
-        // const response = await api.post("/sessions", { email });
-        // const { _id } = response.data;
-        //
-        // localStorage.setItem("user", _id);
-        // localStorage.setItem("name", name);
+        const data = {
+            firstName: name,
+            middleName: midName.length === 0 ? null : midName,
+            lastName: lastName,
+            eMail: email,
+            birthDay: '2000-03-21',
+            phoneNumber: phoneNumber,
+            password: password
+        };
 
-        history.push('/');
+        try {
+            const res = await api.post('http://localhost:3080/client/signup', data);
+            _status = res.status;
+        } catch (err) {
+            if (err.response) {
+                _status = err.response.status;
+            }
+        }
+
+        if (_status >= 200 && _status < 300) {
+            alert('Пользователь создан!');
+            history.push('/');
+
+            return;
+        }
+
+        if (_status === 409) {
+            alert('Пользователь уже был создан ранее!');
+        } else if (_status === 400) {
+            alert('Поля регистрации не могут быть пустыми!');
+        } else {
+            alert('Внутренняя ошибка!');
+        }
     }
 
     return (
@@ -33,9 +57,9 @@ export default function Reg({history}) {
             <img src = {logoSmall} alt = "" id = "logo" />
             <div className = "containerLogin">
                 <div className = "contentLogin">
-                    <p>Войти</p>
+                    <p>Зарегистрироваться</p>
                     <form onSubmit = {handleSubmit}>
-                        <label htmlFor = "name">Фамилия *</label>
+                        <label htmlFor = "lastName">Фамилия *</label>
                         <input
                             type = "text"
                             id = "name"
@@ -51,7 +75,7 @@ export default function Reg({history}) {
                             value = {name}
                             onChange = {event => setName(event.target.value)}
                         />
-                        <label htmlFor = "name">Отчество</label>
+                        <label htmlFor = "middleName">Отчество</label>
                         <input
                             type = "text"
                             id = "name"
