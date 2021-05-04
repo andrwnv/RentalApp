@@ -2,11 +2,9 @@
 .spot-list {
     width: 100%;
     list-style: none;
-    margin-bottom: 30px;
     background: #fff;
     border-radius: 4px;
     padding: 30px;
-
 }
 
 .spot-list div header {
@@ -75,17 +73,19 @@ ul.notifications li button.reject:hover {
 
 }
 
-.ferias {
+.headText {
     font-size: 26px;
     font-weight: bold;
     color: #4b4b4b;
-    margin-top: 40px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 50px;
 }
 
 .spots {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    margin-left: 50px;
 }
 
 .spots p {
@@ -97,7 +97,6 @@ ul.notifications li button.reject:hover {
     font-size: 22px;
     line-height: 30px;
     margin-bottom: 30px;
-
 }
 
 .contentDashboard .spot-list form {
@@ -150,4 +149,19 @@ ul.notifications li button.reject:hover {
         height: 290px;
         padding-left: 5px;
     }
+}
+
+.headText {
+    font-size: 26px;
+    font-weight: bold;
+    color: #4b4b4b;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.dataContainer {
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 50px;
+    padding-right: 50px;
 }

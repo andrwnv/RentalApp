@@ -1,45 +1,24 @@
+import { Col, Button, Form, FormControl } from 'react-bootstrap';
 import React from 'react';
-
-import Adventure from '../../assets/adventure.jpg';
-import Kitchen from '../../assets/kitchen.jpeg';
-import Bedroom from '../../assets/bedroom.png';
-import Food from '../../assets/food.jpeg';
 
 import './Experience.css';
 
 
 export default function Experience() {
-    const fullName = `${localStorage.getItem('lastName')} ${localStorage.getItem('firstName')}`;
+    const fullName = `${localStorage.getItem('firstName')}`;
 
     return (
         <div>
             <h2 className = "User">{fullName}, что ты хочешь найти?</h2>
-            <div className = "cardStyle">
-                <div className = "Experience">
-                    <img src = {Bedroom} alt = "" className = "img" />
-                    <p>Дом</p>
-                </div>
 
-                <div className = "Experience">
-                    <img src = {Kitchen} alt = "" className = "img" />
-                    <p>Квартира</p>
-                </div>
-
-                <div className = "Experience">
-                    <img src = {Adventure} alt = "" className = "img" />
-                    <p>Комната</p>
-                </div>
-
-                <div className = "Experience">
-                    <img src = {Food} alt = "" className = "img" />
-                    <p>Отель</p>
-                </div>
-
-                <div className = "Experience">
-                    <img src = {Food} alt = "" className = "img" />
-                    <p>Хостл</p>
-                </div>
-            </div>
+            <Form inline className = "User">
+                <Col sm={10} style={{padding: 0}}>
+                    <FormControl type="text" placeholder="Search" className="mr-sm-2" style={{width: '90%'}}/>
+                </Col>
+                <Col sm={2} style={{padding: 0}}>
+                    <Button variant="outline-primary">Search</Button>
+                </Col>
+            </Form>
         </div>
     );
 }

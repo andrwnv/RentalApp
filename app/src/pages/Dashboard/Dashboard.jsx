@@ -1,212 +1,71 @@
 import React, { useState } from 'react';
 
 import Experience from '../../components/Experience/Experience';
-import { Container, Modal, Button } from 'react-bootstrap';
-import Slider from 'react-slick';
+import { Modal, Button, Row } from 'react-bootstrap';
 
 import Header from '../../components/Header/Header';
 import api from '../../services/api';
 
 import './Dashboard.css';
+import Ads from '../../components/ads/Ads';
 
+import Cookies from '../../services/cookies';
 
 export default function Dashboard() {
-    const [spots, setSpots] = useState([]);
-    const [citySpots, setcitySpots] = useState([]);
-    const [requests, setRequests] = useState([]);
+    const [data, setData] = useState();
 
-    // const user_id = localStorage.getItem('user');
-
-    // useEffect(() => {
-    //     async function loadSpots() {
-    //         const user_id = localStorage.getItem('user');
-    //         const response = await api.get('/list', {
-    //             headers: {user_id}
-    //         });
-    //         setSpots(response.data);
-    //     }
-    //
-    //     loadSpots();
-    // }, []);
-    //
-    // useEffect(() => {
-    //     async function loadCitySpots() {
-    //         const response = await api.get(`/spots`, {
-    //             params: {
-    //                 city: 'São Paulo'
-    //             }
-    //         });
-    //         setcitySpots(response.data);
-    //     }
-    //
-    //     loadCitySpots();
-    // }, []);
-
-    async function handleAccept(id) {
-        await api.post(`/bookings/${id}/approvals`);
-        setRequests(requests.filter(request => request._id !== id));
-    }
-
-    async function handleReject(id) {
-        await api.post(`/bookings/${id}/rejections`);
-        setRequests(requests.filter(request => request._id !== id));
-    }
-
-    const settings = {
-        dots: true,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
-        initialSlide: 0,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                    infinite: true,
-                    dots: true
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                    initialSlide: 2
-                }
-            },
-            {
-                breakpoint: 765,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    initialSlide: 2
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    initialSlide: 2
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                }
+    const getAdsData = (count, padding) => {
+        api.get(`http://localhost:3080/rent_ads/all?count=${count}&padding=${padding}`, {
+            headers: {
+                'token': Cookies.get('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-        ]
+        }).then(res => {
+            setData(res.data.data);
+        });
+
+        // console.log(res);
     };
 
+    const jsxData = [[], []];
+
+    if( data === undefined ) {
+        console.log('im here');
+        getAdsData(8, 0);
+    } else {
+        let counter = 0;
+        data.forEach(obj => {
+            console.log(obj);
+            if( counter < 4 ) {
+                jsxData[0].push(<Ads name = {obj.title} desc = {obj.description} picLinks = {obj.mediaLinks.urls[0]} />);
+            } else {
+                jsxData[1].push(<Ads name = {obj.title} desc = {obj.description} picLinks = {obj.mediaLinks.urls[0]} />);
+            }
+
+            counter++;
+        });
+    }
 
     return (
         <div className = "containerDashboard">
-
             <Header />
 
-            <ul className = "notifications">
-                {requests.map(request => (
-                    <Modal.Dialog>
-                        <li key = {request._id}>
-                            <Modal.Header>
-                                <Modal.Title>
-                                    У вас есть новый запрос!
-                                </Modal.Title>
-                            </Modal.Header>
-
-                            <Modal.Body>
-                                <strong>{request.user.email}</strong> запрашивает
-                                                                      резервирование
-                                                                      в <strong>{request.spot.title}</strong> к
-                                                                      data:{' '}
-                                <strong>{request.date}</strong>
-                            </Modal.Body>
-
-                            <Modal.Footer>
-                                <Button
-                                    className = "accept"
-                                    onClick = {() => handleAccept(request._id)}
-                                >
-                                    Принять
-                                </Button>
-                                <Button
-                                    className = "reject"
-                                    onClick = {() => handleReject(request._id)}
-                                >
-                                    Отклонить
-                                </Button>
-                            </Modal.Footer>
-                        </li>
-                    </Modal.Dialog>
-                ))}
-            </ul>
-
             <Experience />
+            <h2 className = "headText">Рекомендуется для вас</h2>
+            <div className = "dataContainer">
+                <Row className = "row justify-content-center" style = {{
+                    flexWrap: 'nowrap',
+                }}>
+                    {jsxData[0]}
+                </Row>
 
-            <div className = "contentDashboard">
-                <Container>
-                    <h2 className = "ferias">Где провести отпуск?</h2>
-                    <div className = "spot-list">
-                        <Slider {...settings}>
-                            {spots.map(spot => (
-                                <div>
-                                    <div className = "contentSpots">
-                                        <div className = "Image">
-                                            <header
-                                                style = {{
-                                                    backgroundImage: `url(${spot.thumbnail_url})`
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className = "spots">
-                                            <strong>{spot.title}</strong>
-                                            <p>{spot.city}</p>
-                                            <span>
-                        {spot.price ? `R$${spot.price}/dia` : 'СВОБОДНЫЙ'}
-                      </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </Slider>
-                    </div>
-                </Container>
+                <Row className = "row justify-content-center" style = {{
+                    flexWrap: 'nowrap'
+                }}>
+                    {jsxData[1]}
+                </Row>
             </div>
-
-            <Container>
-                <h2 className = "ferias">Рекомендуется для вас</h2>
-                <div className = "spot-list">
-                    <Slider {...settings}>
-                        {citySpots.map(spot => (
-                            <div>
-                                <div className = "contentSpots">
-                                    <div className = "Image">
-                                        <header
-                                            style = {{
-                                                backgroundImage: `url(${spot.thumbnail_url})`
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div className = "spots">
-                                        <strong>{spot.title}</strong>
-                                        <p>{spot.city}</p>
-                                        <span>
-                      {spot.price ? `R$${spot.price}/dia` : 'СВОБОДНЫЙ'}
-                    </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </Slider>
-                </div>
-            </Container>
         </div>
     );
 };
