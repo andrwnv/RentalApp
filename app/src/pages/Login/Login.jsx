@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
+
 import api from '../../services/api';
+import cookies from '../../services/cookies';
 
 import logoSmall from '../../assets/logosmall.png';
 import './Login.css';
-
 
 export default function Login({history}) {
     const [email, setEmail] = useState('');
@@ -23,7 +24,10 @@ export default function Login({history}) {
             const res = await api.post('http://localhost:3080/client/login', data);
             _status = res.status;
 
-            localStorage.setItem('token', res.data.data.token)
+            cookies.set('token', res.data.data.token, {
+                path: '/',
+            });
+
         } catch (err) {
             if (err.response) {
                 _status = err.response.status;
