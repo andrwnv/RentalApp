@@ -8,15 +8,37 @@ import Client from '../models/types/client_type';
 class RentingAdsController {
     async index(req: express.Request, res: express.Response) {
         try {
-            if ( isAdminUser(req, res) ) {
-                const rentedObjects = await Connection.models.object.findAll();
+            const count = req.query.count as string;
+            const padding = (req.query.padding || 0) as string;
 
-                res.status(200).json({
-                    status: 'Success',
+            if (!count) {
+                const rentedObjects = await Connection.models.object.findAll({
+                    order: [
+                        ['id', 'DESC'],
+                    ],
+                    offset: parseInt(padding)
+                });
+
+                res.status(400).json({
+                    status: 'Error',
                     data: rentedObjects
                 });
+
+                return;
             }
 
+            const rentedObjects = await Connection.models.object.findAll({
+                order: [
+                    ['id', 'ASC'],
+                ],
+                limit: parseInt(count),
+                offset: parseInt(padding)
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: rentedObjects
+            });
         } catch(err) {
             res.status(500).json({
                 status: 'Error',
@@ -130,8 +152,16 @@ class RentingAdsController {
         }
     }
 
-    async delete(_: express.Request, __: express.Response) {
+    async delete(req: express.Request, res: express.Response) {
+        try {
 
+
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
     }
 
     async update(_: express.Request, __: express.Response) {
