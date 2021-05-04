@@ -1,5 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
-import socketio from 'socket.io-client';
+import React, {useState, useEffect} from 'react';
 
 import Experience from '../../components/Experience/Experience';
 import {Container, Modal, Button} from 'react-bootstrap';
@@ -16,45 +15,32 @@ export default function Dashboard() {
     const [citySpots, setcitySpots] = useState([]);
     const [requests, setRequests] = useState([]);
 
-    const user_id = localStorage.getItem('user');
-    const socket = useMemo(
-        () =>
-            socketio('http://localhost:3333', {
-                query: {user_id}
-            }),
-        [user_id]
-    );
+    // const user_id = localStorage.getItem('user');
 
-    useEffect(() => {
-        socket.on('booking_request', data => {
-            setRequests([...requests, data]);
-        });
-    }, [requests, socket]);
-
-    useEffect(() => {
-        async function loadSpots() {
-            const user_id = localStorage.getItem('user');
-            const response = await api.get('/list', {
-                headers: {user_id}
-            });
-            setSpots(response.data);
-        }
-
-        loadSpots();
-    }, []);
-
-    useEffect(() => {
-        async function loadCitySpots() {
-            const response = await api.get(`/spots`, {
-                params: {
-                    city: 'São Paulo'
-                }
-            });
-            setcitySpots(response.data);
-        }
-
-        loadCitySpots();
-    }, []);
+    // useEffect(() => {
+    //     async function loadSpots() {
+    //         const user_id = localStorage.getItem('user');
+    //         const response = await api.get('/list', {
+    //             headers: {user_id}
+    //         });
+    //         setSpots(response.data);
+    //     }
+    //
+    //     loadSpots();
+    // }, []);
+    //
+    // useEffect(() => {
+    //     async function loadCitySpots() {
+    //         const response = await api.get(`/spots`, {
+    //             params: {
+    //                 city: 'São Paulo'
+    //             }
+    //         });
+    //         setcitySpots(response.data);
+    //     }
+    //
+    //     loadCitySpots();
+    // }, []);
 
     async function handleAccept(id) {
         await api.post(`/bookings/${id}/approvals`);

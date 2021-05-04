@@ -12,7 +12,7 @@ import './NewObject.css';
 export default function NewObject({history}) {
     const [title, setTitle] = useState('');
     const [city, setCity] = useState('');
-    const [items, setItems] = useState('');
+    // const [items, setItems] = useState('');
     const [price, setPrice] = useState('');
     const [thumbnail, setThumbnail] = useState(null);
 

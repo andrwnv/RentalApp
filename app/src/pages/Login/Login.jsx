@@ -28,6 +28,7 @@ export default function Login({history}) {
 
             localStorage.setItem('firstName', clientData.firstName);
             localStorage.setItem('lastName', clientData.lastName);
+            localStorage.setItem('photoLink', clientData.photoLink);
 
             cookies.set('token', res.data.data.token, {
                 path: '/',

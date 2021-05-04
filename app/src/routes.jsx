@@ -6,6 +6,7 @@ import Login from './pages/Login/Login';
 import NewObject from './pages/NewObject/NewObject';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import SettingsMenu from './components/SettingsMenu/SettingsMenu';
 
 
 const Routes = () => {

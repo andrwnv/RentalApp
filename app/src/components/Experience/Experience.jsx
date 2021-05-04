@@ -6,15 +6,16 @@ import Bedroom from '../../assets/bedroom.png';
 import Food from '../../assets/food.jpeg';
 
 import './Experience.css';
+import SettingsMenu from '../SettingsMenu/SettingsMenu';
+import {Col} from 'react-bootstrap';
 
 export default function Experience() {
     const fullName = `${localStorage.getItem('lastName')} ${localStorage.getItem('firstName')}`;
 
     return (
-        <>
+        <div>
             <h2 className = "User">{fullName}, что ты хочешь найти?</h2>
             <div className = "cardStyle">
-
                 <div className = "Experience">
                     <img src = {Bedroom} alt = "" className = "img" />
                     <p>Дом</p>
@@ -40,6 +41,6 @@ export default function Experience() {
                     <p>Хостл</p>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

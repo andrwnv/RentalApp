@@ -1,52 +1,39 @@
-import {Navbar, NavbarBrand, Nav, Col} from 'react-bootstrap';
-import {Link} from 'react-router-dom';
+import {Navbar, NavbarBrand, Nav, Col, Button, FormControl, Form, NavDropdown} from 'react-bootstrap';
 import React from 'react';
 
 import Logo from '../../assets/airbnb_logo.png';
 import './Header.css';
+import SettingsMenu from '../SettingsMenu/SettingsMenu';
 
 
 export default function Header() {
     return (
-        <Navbar className = "main white nav-margins" expand = "lg">
-            <Col>
-                <NavbarBrand className = "logo-size" alt = "logo">
-                    <img
-                        height = "50"
-                        width = "50"
-                        src = {Logo}
-                        alt = "logo"
-                    />
-                </NavbarBrand>
-            </Col>
-            <Col>
-                <Navbar.Collapse id = "basic-navbar-nav">
-                    <Nav className = "mx-auto parent">
-                        <Nav.Link href = "#saves" className = "poppins black link-style child">
-                            Сохранено
-                        </Nav.Link>
-                        <Nav.Link href = "#routes" className = "poppins black link-style child">
-                            Поездки
-                        </Nav.Link>
-                        <Nav.Link href = "#help" className = "poppins black link-style child">
-                            Помощь
-                        </Nav.Link>
-                        <Nav.Link href = "#trav" className = "poppins black link-style child">
-                            Путешествия
-                        </Nav.Link>
-                    </Nav>
-                </Navbar.Collapse>
-            </Col>
-            <Col className = "text-right">
-                <Navbar.Collapse id = "basic-navbar-nav">
-                    <Link to = "/new" className = "mx-auto parent">
-                        <button className = "new">
-                            Зарегистрируйте вашу недвижимость
-                        </button>
-                    </Link>
-                </Navbar.Collapse>
-                <Navbar.Toggle aria-controls = "basic-navbar-nav" />
-            </Col>
+        <Navbar collapseOnSelect expand = "lg" bg = "dark" variant = "dark">
+            <Navbar.Brand href = "#home">
+                <img
+                    alt = ""
+                    src = {Logo}
+                    width = "30"
+                    height = "30"
+                    className = "d-inline-block align-top"
+                />{' '}
+                Rental App
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls = "responsive-navbar-nav" />
+            <Navbar.Collapse id = "responsive-navbar-nav">
+                <Nav className = "mr-auto">
+                    <Nav.Link href = "#features">Сохранено</Nav.Link>
+                    <Nav.Link href = "#pricing">Поездки</Nav.Link>
+                    <Nav.Link href = "#pricing">Помощь</Nav.Link>
+                    <Nav.Link href = "#pricing">Путешествия</Nav.Link>
+                </Nav>
+                <Nav>
+                    <SettingsMenu />
+                    <Nav.Link eventKey = {2} href = "/new">
+                        Создайте свое объявление!
+                    </Nav.Link>
+                </Nav>
+            </Navbar.Collapse>
         </Navbar>
     );
 }
