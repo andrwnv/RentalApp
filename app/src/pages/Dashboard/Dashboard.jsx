@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
 import Experience from '../../components/Experience/Experience';
-import {Container, Modal, Button} from 'react-bootstrap';
+import { Container, Modal, Button } from 'react-bootstrap';
 import Slider from 'react-slick';
 
 import Header from '../../components/Header/Header';

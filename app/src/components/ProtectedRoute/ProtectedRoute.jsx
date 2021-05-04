@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Redirect} from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
 import Cookies from '../../services/cookies';
 
@@ -10,7 +10,7 @@ export default function ProtectedRoute({component: Component, ...rest}) {
             render = {(props) => {
                 const token = Cookies.get('token');
 
-                if (token) {
+                if( token ) {
                     return <Component {...props} />;
                 } else {
                     return (

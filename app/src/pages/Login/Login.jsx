@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import api from '../../services/api';
 import cookies from '../../services/cookies';
-
 import logoSmall from '../../assets/logosmall.png';
+
 import './Login.css';
+
 
 export default function Login({history}) {
     const [email, setEmail] = useState('');
@@ -34,20 +35,18 @@ export default function Login({history}) {
                 path: '/',
             });
 
-        } catch (err) {
-            if (err.response) {
+        } catch(err) {
+            if( err.response ) {
                 _status = err.response.status;
             }
         }
 
-        console.log(_status);
-
-        if (_status >= 400 && _status < 500) {
+        if( _status >= 400 && _status < 500 ) {
             alert('Неправильно введены данные или пользователя не существует!');
             return;
         }
 
-        if (_status === 200) {
+        if( _status === 200 ) {
             history.push('/dashboard');
         }
     }

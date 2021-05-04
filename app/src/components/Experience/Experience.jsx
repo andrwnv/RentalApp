@@ -6,8 +6,7 @@ import Bedroom from '../../assets/bedroom.png';
 import Food from '../../assets/food.jpeg';
 
 import './Experience.css';
-import SettingsMenu from '../SettingsMenu/SettingsMenu';
-import {Col} from 'react-bootstrap';
+
 
 export default function Experience() {
     const fullName = `${localStorage.getItem('lastName')} ${localStorage.getItem('firstName')}`;

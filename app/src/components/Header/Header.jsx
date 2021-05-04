@@ -1,9 +1,9 @@
-import {Navbar, NavbarBrand, Nav, Col, Button, FormControl, Form, NavDropdown} from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import React from 'react';
 
+import SettingsMenu from '../SettingsMenu/SettingsMenu';
 import Logo from '../../assets/airbnb_logo.png';
 import './Header.css';
-import SettingsMenu from '../SettingsMenu/SettingsMenu';
 
 
 export default function Header() {

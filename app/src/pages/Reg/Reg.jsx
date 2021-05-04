@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import api from '../../services/api';
 
 import logoSmall from '../../assets/logosmall.png';
@@ -30,22 +30,22 @@ export default function Reg({history}) {
         try {
             const res = await api.post('http://localhost:3080/client/signup', data);
             _status = res.status;
-        } catch (err) {
-            if (err.response) {
+        } catch(err) {
+            if( err.response ) {
                 _status = err.response.status;
             }
         }
 
-        if (_status >= 200 && _status < 300) {
+        if( _status >= 200 && _status < 300 ) {
             alert('Пользователь создан!');
             history.push('/');
 
             return;
         }
 
-        if (_status === 409) {
+        if( _status === 409 ) {
             alert('Пользователь уже был создан ранее!');
-        } else if (_status === 400) {
+        } else if( _status === 400 ) {
             alert('Поля регистрации не могут быть пустыми!');
         } else {
             alert('Внутренняя ошибка!');

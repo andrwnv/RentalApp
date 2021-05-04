@@ -1,7 +1,5 @@
-import React, {useState, useMemo} from 'react';
+import React, { useState, useMemo } from 'react';
 import Select from 'react-select';
-
-// import api from '../../services/api';
 
 import camera from '../../assets/camera.svg';
 import airbnb from '../../assets/airbnb.png';
