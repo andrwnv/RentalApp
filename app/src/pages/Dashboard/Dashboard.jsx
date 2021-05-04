@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 
 import Experience from '../../components/Experience/Experience';
-import { Modal, Button, Row } from 'react-bootstrap';
+import { Container, Button, Row } from 'react-bootstrap';
 
 import Header from '../../components/Header/Header';
 import api from '../../services/api';
 
 import './Dashboard.css';
-import Ads from '../../components/ads/Ads';
+import { Ads } from '../../components/ads/Ads';
 
 import Cookies from '../../services/cookies';
 
 export default function Dashboard() {
     const [data, setData] = useState();
+
+    localStorage.setItem('countForLoad', '' + 4);
+    localStorage.setItem('currentPaddingForLoad', '' + 0);
 
     const getAdsData = (count, padding) => {
         api.get(`http://localhost:3080/rent_ads/all?count=${count}&padding=${padding}`, {
@@ -22,30 +25,53 @@ export default function Dashboard() {
                 'Content-Type': 'application/json'
             }
         }).then(res => {
-            setData(res.data.data);
+            if (data === undefined) {
+                setData(res.data.data);
+            } else {
+                setData(data.concat(res.data.data));
+            }
         });
-
-        // console.log(res);
     };
 
-    const jsxData = [[], []];
+    const jsxData = [];
 
     if( data === undefined ) {
-        console.log('im here');
-        getAdsData(8, 0);
+        getAdsData(localStorage.getItem('countForLoad'),
+            localStorage.getItem('currentPaddingForLoad'));
+
     } else {
-        let counter = 0;
+        let curIndex = 0;
         data.forEach(obj => {
-            console.log(obj);
-            if( counter < 4 ) {
-                jsxData[0].push(<Ads name = {obj.title} desc = {obj.description} picLinks = {obj.mediaLinks.urls[0]} />);
-            } else {
-                jsxData[1].push(<Ads name = {obj.title} desc = {obj.description} picLinks = {obj.mediaLinks.urls[0]} />);
+            if( jsxData.length === 0 ) {
+                jsxData.push([]);
+            } else if( jsxData[curIndex].length === 4 ) {
+                jsxData.push([]);
+                curIndex++;
             }
 
-            counter++;
+            jsxData[curIndex].push(<Ads name = {obj.title + obj.id} desc = {obj.description}
+                                        picLinks = {obj.mediaLinks.urls[0]} />);
         });
     }
+
+    let resJSX = [];
+    jsxData.forEach(arr => {
+        resJSX.push(
+            <Row className = "row justify-content-center" style = {{
+                flexWrap: 'nowrap',
+            }}>
+                {arr}
+            </Row>
+        );
+    })
+
+    const loadMoreEvent = (_) => {
+
+        const padding = +localStorage.getItem('currentPaddingForLoad') + data.length;
+        getAdsData(localStorage.getItem('countForLoad'), padding);
+
+        localStorage.setItem('currentPaddingForLoad', '' + padding);
+    };
 
     return (
         <div className = "containerDashboard">
@@ -54,18 +80,14 @@ export default function Dashboard() {
             <Experience />
             <h2 className = "headText">Рекомендуется для вас</h2>
             <div className = "dataContainer">
-                <Row className = "row justify-content-center" style = {{
-                    flexWrap: 'nowrap',
-                }}>
-                    {jsxData[0]}
-                </Row>
-
-                <Row className = "row justify-content-center" style = {{
-                    flexWrap: 'nowrap'
-                }}>
-                    {jsxData[1]}
-                </Row>
+                {resJSX}
             </div>
+
+            <Container style = {{width: '15%', marginBottom: '20px', marginTop: '10px'}}>
+                <Button variant = "outline-primary" onClick = {loadMoreEvent}>
+                    Загрузить еще...
+                </Button>
+            </Container>
         </div>
     );
 };
