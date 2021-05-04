@@ -7,10 +7,12 @@ import { RegisterValidate } from './validators/register_validator';
 import { NewRentAdValidate } from './validators/new_rent_ad_validator';
 import { UploadFileCtrl } from './api/upload_files_controller';
 import { RentingAdsCtrl } from './api/renting_ads_controller';
+import cors from 'cors';
 
 import passport from './services/passport';
 
 const routes = express.Router();
+
 
 // import Connection from './models/db_models';
 // routes.get('/database/connection_status', (req: express.Request, res: express.Response) => {
@@ -40,14 +42,7 @@ const routes = express.Router();
 //     });
 // });
 
-
-routes.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    next();
-});
+routes.use(cors());
 
 // User routes.
 routes.get('/', (_, res: express.Response) => {
