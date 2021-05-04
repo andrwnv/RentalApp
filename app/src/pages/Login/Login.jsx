@@ -24,6 +24,11 @@ export default function Login({history}) {
             const res = await api.post('http://localhost:3080/client/login', data);
             _status = res.status;
 
+            const clientData = res.data.data.client_data;
+
+            localStorage.setItem('firstName', clientData.firstName);
+            localStorage.setItem('lastName', clientData.lastName);
+
             cookies.set('token', res.data.data.token, {
                 path: '/',
             });

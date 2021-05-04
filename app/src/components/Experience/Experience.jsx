@@ -8,11 +8,11 @@ import Food from '../../assets/food.jpeg';
 import './Experience.css';
 
 export default function Experience() {
-    const name = localStorage.getItem('name');
+    const fullName = `${localStorage.getItem('lastName')} ${localStorage.getItem('firstName')}`;
 
     return (
         <>
-            <h2 className = "User">{name}, что ты хочешь найти?</h2>
+            <h2 className = "User">{fullName}, что ты хочешь найти?</h2>
             <div className = "cardStyle">
 
                 <div className = "Experience">
