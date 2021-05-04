@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 
-// import Connection from './models/db_models';
+
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
 import { NewRentAdValidate } from './validators/new_rent_ad_validator';
@@ -12,6 +12,7 @@ import passport from './services/passport';
 
 const routes = express.Router();
 
+// import Connection from './models/db_models';
 // routes.get('/database/connection_status', (req: express.Request, res: express.Response) => {
 //     Connection.authenticate().then(() => {
 //         console.log('Connection has been established successfully.');
@@ -40,8 +41,15 @@ const routes = express.Router();
 // });
 
 
-// User routes.
+routes.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
+    next();
+});
+
+// User routes.
 routes.get('/', (_, res: express.Response) => {
     res.status(200).json('Hello world!');
 })
