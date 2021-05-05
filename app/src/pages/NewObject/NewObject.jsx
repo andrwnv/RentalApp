@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 
+import BootstrapTable from 'react-bootstrap-table-next';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import cellEditFactory from 'react-bootstrap-table2-editor';
+
 import Select from 'react-select';
 
 import camera from '../../assets/camera.svg';
@@ -10,6 +14,7 @@ import api from '../../services/api';
 import './NewObject.css';
 import Cookies from '../../services/cookies';
 
+let counter = 1;
 
 export default function NewObject({history}) {
     const [title, setTitle] = useState('');
@@ -194,6 +199,34 @@ export default function NewObject({history}) {
         });
     }
 
+    const [products, setProduct] = useState([]);
+
+    const columns = [
+        {
+            dataField: 'id',
+            text: 'Номер'
+        },
+        {
+            dataField: 'name',
+            text: 'Название'
+        },
+        {
+            dataField: 'price',
+            text: 'Стоимость'
+        }
+    ];
+
+    async function handleAddRow(_) {
+        setProduct(products.concat([{
+            id: counter,
+            name: '',
+            price: ''
+        }]));
+
+        counter++;
+    }
+
+
     return (
         <div className = "background">
             <div className = "containerNew">
@@ -324,6 +357,17 @@ export default function NewObject({history}) {
                             placeholder = "Сумма, начисляемая за день..."
                             onChange = {event => setPrice(event.target.value)}
                         />
+
+                        {/*<button type = "button" className = "addBtn" onClick = {handleAddRow}>*/}
+                        {/*    Добавить платное удобство*/}
+                        {/*</button>*/}
+
+                        {/*<BootstrapTable*/}
+                        {/*    keyField = 'id'*/}
+                        {/*    data = {products}*/}
+                        {/*    columns = {columns}*/}
+                        {/*    cellEdit = {cellEditFactory({mode: 'click'})}*/}
+                        {/*/>*/}
 
                         <button type = "submit" className = "btn">
                             Создать!

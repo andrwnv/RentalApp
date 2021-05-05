@@ -133,6 +133,23 @@ ul.notifications li button.reject:hover {
     cursor: pointer
 }
 
+.addBtn {
+    border: 0;
+    border-radius: 2px;
+    width: 100%;
+    height: 42px;
+    padding: 0 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #249eba;
+    color: #fff;
+    cursor: pointer
+}
+
+.addBtn:hover {
+    background: #218da5
+}
+
 .contentDashboard .spot-list form label span {
     font-weight: normal;
     color: #999999;

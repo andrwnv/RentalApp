@@ -5,7 +5,7 @@ import Reg from './pages/Reg/Reg';
 import Login from './pages/Login/Login';
 import NewObject from './pages/NewObject/NewObject';
 import Dashboard from './pages/Dashboard/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import ProtectedRoute from './components/CustomRoute/ProtectedRoute';
 
 
 const Routes = () => {

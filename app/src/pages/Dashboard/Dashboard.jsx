@@ -7,7 +7,7 @@ import Header from '../../components/Header/Header';
 import api from '../../services/api';
 
 import './Dashboard.css';
-import { Ads } from '../../components/ads/Ads';
+import { Ads } from '../../components/Ads/Ads';
 
 import Cookies from '../../services/cookies';
 
