@@ -127,3 +127,7 @@ label#thumbnail.has-thumbnail img {
 .margin {
     margin-top: 20px;
 }
+
+.select {
+    margin-top: 8px;
+}
