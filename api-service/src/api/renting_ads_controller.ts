@@ -94,6 +94,7 @@ class RentingAdsController {
                 FK_street: street.get('id'),
                 FK_objectType: objectType.get('id'),
                 houseNumber: req.body.houseNumber,
+                comfortProps: req.body.comfortProps
             };
 
             const _newAd = await Connection.models.object.create(adData);

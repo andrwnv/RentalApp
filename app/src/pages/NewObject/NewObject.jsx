@@ -28,6 +28,8 @@ export default function NewObject({history}) {
     const [apiLocalitiesTypes, setApiLocalitiesTypes] = useState([]);
     const [apiHouseTypes, setApiHouseType] = useState([]);
 
+    const [comfortData, setComfortData] = useState([]);
+
     const [files, setFiles] = useState(null);
     const photos = [];
 
@@ -47,8 +49,28 @@ export default function NewObject({history}) {
         });
     }
 
+    const aquaticCreatures = [
+        {label: 'Своя кухня', value: 'kitchen'},
+        {label: 'Wi-Fi', value: 'wi-fi'},
+        {label: 'Телевизор', value: 'tv'},
+        {label: 'Фен', value: 'dryer'},
+        {label: 'Стиральная машина', value: 'washer'},
+        {label: 'Утюг', value: 'iron'},
+        {label: 'Парковка', value: 'parking'},
+        {label: 'Лифт', value: 'elevator'},
+        {label: 'Рабочая зона', value: 'work-zone'},
+        {label: 'Предметы первой необходимости', value: 'essentials'},
+        {label: 'Вечеринки', value: 'party'},
+    ];
+
     async function handleSubmit(event) {
         event.preventDefault();
+
+        let comfortProps = [];
+
+        comfortData.forEach(data => {
+            comfortProps.push(data.label);
+        });
 
         const data = {
             title: title,
@@ -59,7 +81,8 @@ export default function NewObject({history}) {
             localityType: localityType,
             locality: locality,
             houseNumber: houseNumber,
-            objectType: houseType
+            objectType: houseType,
+            comfortProps: comfortProps
         }
 
         const token = Cookies.get('token');
@@ -91,20 +114,6 @@ export default function NewObject({history}) {
             alert('Не корректно заполнены поля!');
         });
     }
-
-    const aquaticCreatures = [
-        {label: 'Своя кухня', value: 'kitchen'},
-        {label: 'Wi-Fi', value: 'wi-fi'},
-        {label: 'Телевизор', value: 'tv'},
-        {label: 'Фен', value: 'dryer'},
-        {label: 'Стиральная машина', value: 'washer'},
-        {label: 'Утюг', value: 'iron'},
-        {label: 'Парковка', value: 'parking'},
-        {label: 'Лифт', value: 'elevator'},
-        {label: 'Рабочая зона', value: 'work-zone'},
-        {label: 'Предметы первой необходимости', value: 'essentials'},
-        {label: 'Вечеринки', value: 'party'},
-    ];
 
     if( apiCountries.length === 0 ) {
         api.get('http://localhost:3080/classifiers/countries').then((res) => {
@@ -303,8 +312,7 @@ export default function NewObject({history}) {
                             placeholder = {'Удобства...'}
                             isMulti
                             onChange = {event => {
-                                console.log(event);
-                                console.log('Im here');
+                                setComfortData(event);
                             }}
                         />
 
