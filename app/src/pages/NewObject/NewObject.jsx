@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 
 import Select from 'react-select';
@@ -33,7 +33,6 @@ export default function NewObject({history}) {
 
     if( files ) {
         Array.from(files).forEach(file => {
-            console.log(file);
             photos.push(
                 <Carousel.Item style = {{
                     height: '12em'
@@ -71,9 +70,24 @@ export default function NewObject({history}) {
         };
 
         api.post('http://localhost:3080/rent_ads', data, {headers}).then(res => {
+            console.log(res);
+            if( files ) {
+                let formData = new FormData();
+
+                Array.from(files).forEach(file => {
+                    console.log(file);
+                    formData.append('adImages', file);
+                });
+
+                api.post('http://localhost:3080/rent_ads/upload_photos?land_id=' + res.data.data.item_id, formData, {headers}).then(res => {
+                    alert('Файлы отправлены!');
+                });
+            }
+
             alert('Объявление создано!');
             history.push('/dashboard');
         }).catch(err => {
+            console.log(err);
             alert('Не корректно заполнены поля!');
         });
     }
