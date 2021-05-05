@@ -1,40 +1,48 @@
 import React, { useState, useMemo } from 'react';
+import { Carousel } from 'react-bootstrap';
+
 import Select from 'react-select';
 
 import camera from '../../assets/camera.svg';
 import airbnb from '../../assets/airbnb.png';
+import api from '../../services/api';
 
 import './NewObject.css';
 
 
 export default function NewObject({history}) {
     const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [city, setCity] = useState('');
-    // const [items, setItems] = useState('');
+    const [houseNumber, setHouseNumber] = useState('');
     const [price, setPrice] = useState('');
-    const [thumbnail, setThumbnail] = useState(null);
 
-    const preview = useMemo(() => {
-        return thumbnail ? URL.createObjectURL(thumbnail) : null;
-    }, [thumbnail]);
+    const [files, setFiles] = useState(null);
+    const photos = [];
+
+    if( files ) {
+        Array.from(files).forEach(file => {
+            console.log(file);
+            photos.push(
+                <Carousel.Item style = {{
+                    height: '12em'
+                }}>
+                    <img
+                        className = "d-block w-100"
+                        src = {URL.createObjectURL(file)}
+                    />
+                </Carousel.Item>
+            );
+
+        });
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        // const data = new FormData();
-        // const user_id = localStorage.getItem('user');
-        //
-        // data.append('thumbnail', thumbnail);
-        // data.append('title', title);
-        // data.append('city', city);
-        // data.append('items', items);
-        //
-        // data.append('price', price);
-        // await api.post('/spots', data, {
-        //     headers: {user_id}
-        // });
+        api.post();
 
-        history.push('/dashboard');
+        // history.push('/dashboard');
     }
 
     const aquaticCreatures = [
@@ -59,19 +67,28 @@ export default function NewObject({history}) {
                 }}>
                     <img src = {airbnb} alt = "airbnb" id = "logoAirbnb" />
                 </button>
+
                 <div className = "contentNew">
                     <form onSubmit = {handleSubmit}>
                         <label
                             id = "thumbnail"
-                            style = {{backgroundImage: `url(${preview})`}}
-                            className = {thumbnail ? 'has-thumbnail' : ''}
                         >
                             <input
-                                type = "file"
-                                onChange = {event => setThumbnail(event.target.files[0])}
+                                type = 'file'
+                                onChange = {event => {
+                                    setFiles(event.target.files);
+                                }}
+
+                                multiple = 'multiple'
                             />
                             <img src = {camera} alt = "Select img" />
                         </label>
+
+                        <Carousel style = {{
+                            marginBottom: '8px'
+                        }}>
+                            {photos}
+                        </Carousel>
 
                         <label htmlFor = "title">Название собственности *</label>
                         <input
@@ -82,6 +99,16 @@ export default function NewObject({history}) {
                             onChange = {event => setTitle(event.target.value)}
                         />
 
+                        <label htmlFor = "description">Описание собственности *</label>
+                        <textarea
+                            id="description"
+                            value={description}
+                            placeholder = "Описание вашей собственности..."
+                            onChange={event => setDescription(event.target.value)}
+                            cols="40"
+                            rows="5"
+                        />
+
                         <label htmlFor = "city">Адрес *</label>
                         <input
                             type = "text"
@@ -89,6 +116,15 @@ export default function NewObject({history}) {
                             value = {city}
                             placeholder = "Название города..."
                             onChange = {event => setCity(event.target.value)}
+                        />
+
+                        <label htmlFor = "houseNumber">Номер дома *</label>
+                        <input
+                            type = "text"
+                            id = "houseNumber"
+                            value = {houseNumber}
+                            placeholder = "Сумма, начисляемая за день..."
+                            onChange = {event => setHouseNumber(event.target.value)}
                         />
 
                         <label htmlFor = "items">Удобства *</label>

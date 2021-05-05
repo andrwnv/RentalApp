@@ -83,6 +83,15 @@ label#thumbnail.has-thumbnail img {
     font-size: 16px;
 }
 
+.contentNew form textarea {
+    margin-bottom: 20px;
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+    min-height: 45px;
+    padding: 10px 15px 0 15px;
+    font-size: 16px;
+}
+
 .selectStyle {
     margin-bottom: 20px;
     border: 1px solid #dddddd;
