@@ -2,7 +2,6 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 
 import Connection from '../models/db_models';
-import isAdminUser from './checks/is_admin_check';
 import Client from '../models/types/client_type';
 
 class RentingAdsController {

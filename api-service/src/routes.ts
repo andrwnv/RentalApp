@@ -1,13 +1,13 @@
 import express from 'express';
 import multer from 'multer';
-
+import cors from 'cors';
 
 import { UserCtrl } from './api/user_controller';
 import { RegisterValidate } from './validators/register_validator';
 import { NewRentAdValidate } from './validators/new_rent_ad_validator';
 import { UploadFileCtrl } from './api/upload_files_controller';
 import { RentingAdsCtrl } from './api/renting_ads_controller';
-import cors from 'cors';
+import { ClassifiersCtrl } from './api/classifiers_controller';
 
 import passport from './services/passport';
 
@@ -79,5 +79,12 @@ routes.patch('/rent_ads', passport.authenticate('jwt', { session: false }), Rent
 routes.get('/rent_ads/user_ads', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.userAds);
 routes.post('/rent_ads/upload_photos', passport.authenticate('jwt', { session: false }),
     upload.array('adImages', 10), UploadFileCtrl.uploadAdPhotos);
+
+// Classifiers routes.
+routes.get('/classifiers/countries', ClassifiersCtrl.allCountries);
+routes.get('/classifiers/streets', ClassifiersCtrl.allStreets);
+routes.get('/classifiers/localities', ClassifiersCtrl.allLocalities);
+routes.get('/classifiers/localities_types', ClassifiersCtrl.allLocalitiesTypes);
+routes.get('/classifiers/house_types', ClassifiersCtrl.allHouseTypes);
 
 export default routes;
