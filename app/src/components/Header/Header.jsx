@@ -12,7 +12,7 @@ export default function Header() {
             paddingLeft: "50px",
             paddingRight: "50px",
         }}>
-            <Navbar.Brand href = "#home">
+            <Navbar.Brand href = "/dashboard">
                 <img
                     alt = ""
                     src = {Logo}
