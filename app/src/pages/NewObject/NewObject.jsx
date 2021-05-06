@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 
+import Select from 'react-select';
+
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
-
-import Select from 'react-select';
 
 import camera from '../../assets/camera.svg';
 import airbnb from '../../assets/airbnb.png';
@@ -14,7 +14,7 @@ import api from '../../services/api';
 import './NewObject.css';
 import Cookies from '../../services/cookies';
 
-let counter = 1;
+let counter = 0;
 
 export default function NewObject({history}) {
     const [title, setTitle] = useState('');
@@ -199,6 +199,7 @@ export default function NewObject({history}) {
         });
     }
 
+
     const [products, setProduct] = useState([]);
 
     const columns = [
@@ -216,9 +217,9 @@ export default function NewObject({history}) {
         }
     ];
 
-    async function handleAddRow(_) {
+    function handleAddRow(_) {
         setProduct(products.concat([{
-            id: counter,
+            id: counter + 1,
             name: '',
             price: ''
         }]));
@@ -226,6 +227,13 @@ export default function NewObject({history}) {
         counter++;
     }
 
+    function handleDelRow(_) {
+        if (counter > 0) {
+            products.pop();
+            setProduct(products.concat([]));
+            counter--;
+        }
+    }
 
     return (
         <div className = "background">
@@ -342,7 +350,7 @@ export default function NewObject({history}) {
                         <Select
                             options = {aquaticCreatures}
                             id = 'items'
-                            placeholder = {'Удобства...'}
+                            placeholder = {'Условия...'}
                             isMulti
                             onChange = {event => {
                                 setComfortData(event);
@@ -358,16 +366,20 @@ export default function NewObject({history}) {
                             onChange = {event => setPrice(event.target.value)}
                         />
 
-                        {/*<button type = "button" className = "addBtn" onClick = {handleAddRow}>*/}
-                        {/*    Добавить платное удобство*/}
-                        {/*</button>*/}
+                        <button type = "button" className = "addBtn" onClick = {handleAddRow}>
+                            Добавить платное удобство
+                        </button>
 
-                        {/*<BootstrapTable*/}
-                        {/*    keyField = 'id'*/}
-                        {/*    data = {products}*/}
-                        {/*    columns = {columns}*/}
-                        {/*    cellEdit = {cellEditFactory({mode: 'click'})}*/}
-                        {/*/>*/}
+                        <BootstrapTable
+                            keyField = 'id'
+                            data = {products}
+                            columns = {columns}
+                            cellEdit = {cellEditFactory({mode: 'click'})}
+                        />
+
+                        <button type = "button" className = "addBtn" onClick = {handleDelRow} style={{marginTop: '-1em', marginBottom: '40px'}}>
+                            Удалить строку
+                        </button>
 
                         <button type = "submit" className = "btn">
                             Создать!
