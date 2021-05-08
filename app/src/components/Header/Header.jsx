@@ -2,7 +2,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 import React from 'react';
 
 import SettingsMenu from '../SettingsMenu/SettingsMenu';
-import Logo from '../../assets/airbnb_logo.png';
+import Logo from '../../assets/logomain.png';
 import './Header.css';
 
 
@@ -28,10 +28,8 @@ export default function Header() {
             <Navbar.Toggle aria-controls = "responsive-navbar-nav" />
             <Navbar.Collapse id = "responsive-navbar-nav">
                 <Nav className = "mr-auto">
-                    <Nav.Link href = "#features">Сохранено</Nav.Link>
-                    <Nav.Link href = "#travels">Поездки</Nav.Link>
-                    <Nav.Link href = "#help">Помощь</Nav.Link>
-                    <Nav.Link href = "#trips">Путешествия</Nav.Link>
+                    <Nav.Link href = "/plane_trip">Запланировать поездку</Nav.Link>
+                    <Nav.Link href = "/dashboard">Объявления</Nav.Link>
                 </Nav>
                 <Nav>
                     <SettingsMenu />

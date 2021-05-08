@@ -8,7 +8,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import camera from '../../assets/camera.svg';
-import airbnb from '../../assets/airbnb.png';
+import airbnb from '../../assets/logomain.png';
 import api from '../../services/api';
 
 import './NewObject.css';
@@ -241,10 +241,16 @@ export default function NewObject({history}) {
                 <button id = "back_button" onClick = {() => {
                     history.push('/dashboard');
                 }}>
-                    <img src = {airbnb} alt = "airbnb" id = "logoAirbnb" />
+                    <img src = {airbnb} alt = "airbnb" id = "logoAirbnb" style={{
+                        width: '4em',
+                        height: '4em',
+                        objectFit: 'cover',
+                        marginTop: '20px',
+                        marginBottom: '20px'
+                    }}/>
                 </button>
 
-                <div className = "contentNew">
+                <div className = "contentNew" style = {{ marginBottom: '20px' }}>
                     <form onSubmit = {handleSubmit}>
                         <label
                             id = "thumbnail"
