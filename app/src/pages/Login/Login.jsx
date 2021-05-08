@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 
 import api from '../../services/api';
 import cookies from '../../services/cookies';
@@ -8,12 +9,14 @@ import './Login.css';
 
 
 export default function Login({history}) {
-    if (cookies.get('token')) {
+    if( cookies.get('token') ) {
         history.push('/dashboard');
     }
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const [bannedModal, showBannedModal] = useState(false);
 
     let _status = 0;
 
@@ -30,6 +33,11 @@ export default function Login({history}) {
             _status = res.status;
 
             const clientData = res.data.data.client_data;
+
+            if( clientData.banned ) {
+                showBannedModal(true);
+                return;
+            }
 
             localStorage.setItem('firstName', clientData.firstName);
             localStorage.setItem('lastName', clientData.lastName);
@@ -61,40 +69,62 @@ export default function Login({history}) {
     }
 
     return (
-        <div className = "login">
-            <img src = {logoSmall} alt = "" id = "logo" />
-            <div className = "containerLogin">
-                <div className = "contentLogin">
+        <div className = 'login'>
+            <Modal
+                show = {bannedModal} onHide = {() => {
+                showBannedModal(false)
+            }}
+            >
+                    <Modal.Header closeButton>
+                        <Modal.Title>БАН!</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Вы были заблокировны модератором или администратором!
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant = 'secondary' onClick = {() => {
+                            showBannedModal(false)
+                        }}
+                        >
+                            Ясно(
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+            <img src = {logoSmall} alt = '' id = 'logo' />
+            <div className = 'containerLogin'>
+                <div className = 'contentLogin'>
                     <p>Войти</p>
                     <form onSubmit = {handleSubmitLogin}>
-                        <label htmlFor = "email">E-mail *</label>
+                        <label htmlFor = 'email'>E-mail *</label>
                         <input
-                            type = "text"
-                            id = "email"
-                            placeholder = "Скажи нам свой e-mail..."
+                            type = 'text'
+                            id = 'email'
+                            placeholder = 'Скажи нам свой e-mail...'
                             value = {email}
                             onChange = {event => setEmail(event.target.value)}
                         />
-                        <label htmlFor = "email">Пароль *</label>
+                        <label htmlFor = 'email'>Пароль *</label>
                         <input
-                            type = "password"
-                            id = "password"
-                            placeholder = "Введи пароль..."
+                            type = 'password'
+                            id = 'password'
+                            placeholder = 'Введи пароль...'
                             value = {password}
                             onChange = {event => setPassword(event.target.value)}
                         />
-                        <button type = "submit" className = "btn">
+                        <button type = 'submit' className = 'btn'>
                             Войти
                         </button>
                     </form>
                 </div>
             </div>
 
-            <div className = "containerLogin">
-                <div className = "contentLogin">
+            <div className = 'containerLogin'>
+                <div className = 'contentLogin'>
                     <p>Нет аккаунта?</p>
                     <form onSubmit = {handleSubmitReg}>
-                        <button type = "submit" className = "btn">
+                        <button type = 'submit' className = 'btn'>
                             Зарегестрироваться
                         </button>
                     </form>
