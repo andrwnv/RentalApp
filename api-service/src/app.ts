@@ -2,6 +2,7 @@ import routes from './routes';
 import dotenv from 'dotenv';
 import passport from 'passport';
 import adminPanelRouter from './routers/admin_panel.router';
+import cors from 'cors';
 
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -20,10 +21,9 @@ server.use(bodyParser.urlencoded({
 }));
 
 server.use(passport.initialize());
-
 server.use(bodyParser.json());
-
 server.use(express.json());
+server.use(cors());
 server.use(routes);
 
 // Init http server.
