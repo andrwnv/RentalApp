@@ -34,9 +34,17 @@ const adminBro = new AdminBro({
     resources: [
         {
             resource: Connection.models.clients,
+            properties: {
+                banned: {
+                    type: 'boolean',
+                    isVisible: {
+                        edit: {isModerator},
+                    },
+                },
+            },
             options: {
                 actions: {
-                    edit: { isAccessible: isAdmin },
+                    edit: { isAccessible: isModerator },
                     new: { isAccessible: isAdmin },
                     delete: { isAccessible: isAdmin },
                 }

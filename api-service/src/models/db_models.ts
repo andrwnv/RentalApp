@@ -84,6 +84,10 @@ const Client = Connection.define(TablesName.Client, {
     password: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    banned: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
     }
 });
 
