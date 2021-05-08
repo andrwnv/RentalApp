@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
+
 import api from '../../services/api';
+import cookies from '../../services/cookies';
 
 import logoSmall from '../../assets/logosmall.png';
 import './Reg.css';
 
 export default function Reg({history}) {
+    if (cookies.get('token')) {
+        history.push('/dashboard');
+    }
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');

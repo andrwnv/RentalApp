@@ -8,6 +8,10 @@ import './Login.css';
 
 
 export default function Login({history}) {
+    if (cookies.get('token')) {
+        history.push('/dashboard');
+    }
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
