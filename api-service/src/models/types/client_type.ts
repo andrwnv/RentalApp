@@ -1,3 +1,7 @@
+export interface ClientType {
+    typeName: string
+}
+
 interface Client {
     id: number,
     firstName: string,
@@ -9,9 +13,7 @@ interface Client {
     photoLink: string,
     rating: number,
 
-    clientType: {
-        typeName: string
-    }
+    clientType: ClientType
 }
 
 export default Client;

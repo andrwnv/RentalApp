@@ -7,6 +7,7 @@ import AdminBro from 'admin-bro';
 
 import Connection from '../models/db_models';
 import { generateMD5 } from '../utils/MD5_generator';
+import { ClientType } from '../models/types/client_type';
 
 dotenv.config();
 
@@ -214,9 +215,6 @@ const adminBro = new AdminBro({
     ]
 });
 
-interface ClientType {
-    typeName: string
-}
 
 const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, {
     authenticate: async(email: string, password: string) => {
