@@ -23,8 +23,6 @@ export default function SettingsMenu() {
                 />
                 Ваш профиль
             </NavDropdown.Item>
-            <NavDropdown.Item href = '#action/3.2'>История</NavDropdown.Item>
-            <NavDropdown.Item href = '#action/3.2'>Ваши путешествия</NavDropdown.Item>
             <NavDropdown.Divider />
             <NavDropdown.Item href = '/' onClick = {logout}>Выйти</NavDropdown.Item>
         </NavDropdown>
