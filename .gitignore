@@ -193,3 +193,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+api-service/.adminbro/*
+api-service/build/*
