@@ -5,9 +5,10 @@ import Reg from './pages/Reg/Reg';
 import Login from './pages/Login/Login';
 import NewObject from './pages/NewObject/NewObject';
 import Dashboard from './pages/Dashboard/Dashboard';
-import ProtectedRoute from './components/CustomRoute/ProtectedRoute';
-import UserProfile from './pages/UserProfile/UserProfile';
 import ObjectPage from './pages/ObjectPage/ObjectPage';
+import PlannedTrip from './pages/PlannedTrip/PlannedTrip';
+import UserProfile from './pages/UserProfile/UserProfile';
+import ProtectedRoute from './components/CustomRoute/ProtectedRoute';
 
 
 const Routes = () => {
@@ -20,6 +21,7 @@ const Routes = () => {
                 <ProtectedRoute path = '/ad' component = {ObjectPage} />
                 <ProtectedRoute path = '/dashboard' component = {Dashboard} />
                 <ProtectedRoute path = '/new' component = {NewObject} />
+                <ProtectedRoute path = '/plane_trip' component = {PlannedTrip} />
             </Switch>
         </BrowserRouter>
     );
