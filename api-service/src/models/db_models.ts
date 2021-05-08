@@ -29,7 +29,9 @@ const TablesName = {
     Street: 'street',
     Country: 'country',
     Locality: 'locality',
-    LocalityType: 'localityType'
+    LocalityType: 'localityType',
+    Report: 'reports',
+    ReportReasons: 'reportReasons'
 };
 
 
@@ -302,6 +304,19 @@ const LocalityType = Connection.define(TablesName.LocalityType, {
     }
 });
 
+const Report = Connection.define(TablesName.Report, {});
+
+const ReportReason = Connection.define(TablesName.ReportReasons, {
+    name: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    }
+});
+
 
 /* @brief: Data base tables foreign keys. */
 
@@ -449,6 +464,34 @@ AdditionalComfort.belongsTo(RentedObject, {
     foreignKey: {
         name: 'FK_rentObject',
         allowNull: false
+    }
+});
+
+Report.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+        allowNull: false
+    }
+});
+
+Report.belongsTo(ReportReason, {
+    foreignKey: {
+        name: 'FK_reason',
+        allowNull: false
+    }
+});
+
+Report.belongsTo(ClientReview, {
+    foreignKey: {
+        name: 'FK_clientReview',
+        allowNull: true
+    }
+});
+
+Report.belongsTo(ObjectReview, {
+    foreignKey: {
+        name: 'FK_objectReview',
+        allowNull: true
     }
 });
 
