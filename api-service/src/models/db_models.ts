@@ -9,8 +9,9 @@ const Connection = new Sequelize(
     {
         dialect: 'postgres',
         host: 'localhost',
-        port: 5432
-    }
+        port: 5432,
+        logging: false
+    },
 );
 
 const TablesName = {
@@ -103,11 +104,19 @@ const PlannedTrips = Connection.define(TablesName.PlannedTrips, {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
-    price: {
+    priceFrom: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    requireRating: {
+    priceTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    requireRatingFrom: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    requireRatingTo: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
