@@ -1,12 +1,12 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, Carousel, Form, Table, FormCheck } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, Carousel, Form } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import { Icon } from '@iconify/react';
 
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
 import Header from '../../components/Header/Header';
 
-import Cookies from '../../services/cookies';
+// import Cookies from '../../services/cookies';
 
 export default class ObjectPage extends React.Component {
     constructor(props) {
@@ -165,6 +165,7 @@ export default class ObjectPage extends React.Component {
                                 }}
                                 className = 'd-block w-100'
                                 src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
+                                alt='carousel image'
                             />
                         </Carousel.Item>
                         <Carousel.Item
@@ -182,6 +183,7 @@ export default class ObjectPage extends React.Component {
                                 }}
                                 className = 'd-block w-100'
                                 src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
+                                alt='carousel image'
                             />
                         </Carousel.Item>
                     </Carousel>
@@ -321,7 +323,7 @@ export default class ObjectPage extends React.Component {
                             <Row>
                                 <img
                                     className = 'objPic'
-                                    src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
+                                    src = 'https://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
                                     alt = 'object pic'
                                 />
                                 <Col>

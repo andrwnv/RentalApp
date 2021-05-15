@@ -14,9 +14,9 @@ class PlannedTripController {
 
             res.status(200).json({
                 status: 'Success',
-                data: {
+                data: [
                     ...userTrips
-                }
+                ]
             });
         } catch(err) {
             res.status(500).json({
