@@ -5,6 +5,7 @@ import cookies from '../../services/cookies';
 
 import logoSmall from '../../assets/logosmall.png';
 import './Reg.css';
+import { Form } from 'react-bootstrap';
 
 export default function Reg({history}) {
     if (cookies.get('token')) {
@@ -17,6 +18,7 @@ export default function Reg({history}) {
     const [lastName, setLastName] = useState('');
     const [midName, setMidName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [birthDay, setBDay] = useState('');
 
     let _status = 0;
 
@@ -28,7 +30,7 @@ export default function Reg({history}) {
             middleName: midName.length === 0 ? null : midName,
             lastName: lastName,
             eMail: email,
-            birthDay: '2000-03-21',
+            birthDay: birthDay,
             phoneNumber: phoneNumber,
             password: password
         };
@@ -105,6 +107,16 @@ export default function Reg({history}) {
                             value = {email}
                             onChange = {event => setEmail(event.target.value)}
                         />
+
+                        <label htmlFor = "email">Дата рождения *</label>
+                        <Form.Control
+                            onChange = {(event) => {
+                                setBDay(event.target.value);
+                            }}
+                            value = {birthDay}
+                            type = 'date' name = 'birthDay'
+                        />
+
                         <label htmlFor = "email">Пароль *</label>
                         <input
                             type = "password"
