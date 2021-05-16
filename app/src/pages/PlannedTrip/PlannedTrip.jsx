@@ -84,7 +84,7 @@ export default class PlannedTrip extends React.Component {
 
         let jsxData = [];
 
-        if (this.state.userTrips.length === 0) {
+        if( this.state.userTrips.length === 0 ) {
             return <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
         }
 
@@ -93,7 +93,7 @@ export default class PlannedTrip extends React.Component {
 
             item.comfortProps.forEach(item => {
                 comfortData.push(
-                    <li style={{paddingLeft: '20px'}}>{item}</li>
+                    <li style = {{paddingLeft: '20px'}}>{item}</li>
                 );
             });
 
@@ -109,8 +109,9 @@ export default class PlannedTrip extends React.Component {
                             <p className = 'objInnerText'>Выбранные стоимости: от {item.priceFrom} до {item.priceTo} руб/день</p>
                         </Col>
 
-                        <button className = 'threeDotButton' style = {{paddingRight: '10px'}}
-                            onClick={() => {
+                        <button
+                            className = 'threeDotButton' style = {{paddingRight: '10px'}}
+                            onClick = {() => {
                                 const token = Cookies.get('token');
                                 const headers = {
                                     'Content-Type': 'application/json',
@@ -120,10 +121,14 @@ export default class PlannedTrip extends React.Component {
 
                                 console.log(headers);
 
-                                api.delete('http://localhost:3080/client/trip/delete', { id: item.id }, {headers}).then(_ => {
-                                    this.forceUpdate();
+                                const data = {
+                                    id: item.id
+                                }
+                                api.delete('http://localhost:3080/client/trip/delete', {headers, data}).then(res => {
+                                    console.log(res);
                                 });
-                            }}>
+                            }}
+                        >
                             <Icon icon = {dashCircle} />
                         </button>
                     </Row>
