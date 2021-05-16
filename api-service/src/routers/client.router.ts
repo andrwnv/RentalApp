@@ -22,12 +22,14 @@ clientsRouter.post('/login',
     passport.authenticate('local'),
     UserCtrl.loginConfirmed);
 
+clientsRouter.get('/create_lease', UploadFileCtrl.generatePDFLease);
+
 clientsRouter.get('/signup/verify', UserCtrl.verify);
 clientsRouter.post('/signup', RegisterValidate, UserCtrl.create);
 clientsRouter.delete('/delete', UserCtrl.delete);
 clientsRouter.get('/current_user', passport.authenticate('jwt', { session: false }), UserCtrl.getCurrentUserInfo);
-clientsRouter.get('/:id', UserCtrl.show);
 
+clientsRouter.get('/:id', UserCtrl.show);
 clientsRouter.post('/upload_avatar', upload.single('avatar'), passport.authenticate('jwt', { session: false }),
     UploadFileCtrl.uploadUserAvatar);
 

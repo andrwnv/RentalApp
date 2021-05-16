@@ -4,6 +4,7 @@ import { generateMD5 } from '../utils/MD5_generator';
 import Client from '../models/types/client_type';
 import cloudinary from '../services/cloudinary';
 import Connection from '../models/db_models';
+import createLease from '../services/lease_contract_creator';
 
 
 class UploadFilesController {
@@ -111,6 +112,24 @@ class UploadFilesController {
                     });
                 });
             }
+
+            res.status(201).json({
+                status: 'Success',
+                data: {
+                    title: 'Files loading to cloudinary.',
+                }
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async generatePDFLease(req: express.Request, res: express.Response): Promise<void> {
+        try {
+            createLease();
 
             res.status(201).json({
                 status: 'Success',
