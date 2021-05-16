@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, Dropdown } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, Form } from 'react-bootstrap';
 
 import { Icon } from '@iconify/react';
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
@@ -8,13 +8,16 @@ import Header from '../../components/Header/Header';
 import './UserProfile.css';
 
 import Cookies from '../../services/cookies';
+import api from '../../services/api';
+
+import { Link } from '@material-ui/core';
 
 
-const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+const CustomToggle = React.forwardRef(({children, onClick}, ref) => (
     <a
-        href=""
-        ref={ref}
-        onClick={e => {
+        href = ''
+        ref = {ref}
+        onClick = {e => {
             e.preventDefault();
             onClick(e);
         }}
@@ -40,10 +43,31 @@ export default class UserProfile extends React.Component {
 
         this.state = {
             showDeleteModal: false,
-            showPicChangeModal: false
+            showPicChangeModal: false,
+            userProfilePic: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
+            firstName: '',
+            lastName: '',
+            userRating: 0
         }
 
         this.history = props.history;
+        this.newUserPic = null;
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get('http://localhost:3080/client/current_user', {headers}).then(res => {
+            this.setState({
+                userProfilePic: res.data.data.photoLink,
+                firstName: res.data.data.firstName,
+                lastName: res.data.data.lastName,
+                userRating: res.data.data.rating
+            });
+        });
     }
 
     handleClose = () => {
@@ -60,7 +84,26 @@ export default class UserProfile extends React.Component {
         this.history.push('/');
     }
 
-    loadNewUserPic = () => {
+    loadNewUserPicModal = () => {
+        if (this.newUserPic === null) {
+            alert('Вы не выбрали файл!');
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('avatar', this.newUserPic[0]);
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.post('http://localhost:3080/client/upload_avatar', formData, {headers}).then(_ => {
+            alert('Файл отправлен!');
+        });
+
         this.setState({showPicChangeModal: false});
     }
 
@@ -90,12 +133,19 @@ export default class UserProfile extends React.Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Изменение аватарки</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Выберите файл</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant = 'secondary' onClick = {this.loadNewUserPic}>
+                    <Modal.Body>
+                        <p>Выберите файл</p>
+                           <input
+                               type = 'file'
+                               onChange = {event => {
+                                   this.newUserPic = event.target.files;
+                               }}
+                           />
+
+                        <Button variant = 'secondary' onClick={this.loadNewUserPicModal}>
                             Обновить
                         </Button>
-                    </Modal.Footer>
+                    </Modal.Body>
                 </Modal>
 
                 <Header />
@@ -108,7 +158,7 @@ export default class UserProfile extends React.Component {
                     <Row>
                         <div style = {{width: '15em'}}>
                             <img
-                                src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
+                                src = {this.state.userProfilePic}
                                 className = 'userPic'
                             />
 
@@ -121,8 +171,8 @@ export default class UserProfile extends React.Component {
                             </Button>
                         </div>
                         <Col>
-                            <h3>UserName UserName </h3>
-                            <h4>Рейтинг: 7,2 из 10</h4>
+                            <h3>{this.state.firstName} {this.state.lastName}</h3>
+                            <h4>Рейтинг: {this.state.userRating} из 10</h4>
                         </Col>
 
                         <Button style = {{width: '15%'}} variant = 'danger' onClick = {this.openDeleteModal}>

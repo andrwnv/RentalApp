@@ -13,7 +13,7 @@ class UploadFilesController {
                 res.status(404).json({
                     status: 'Error',
                     data: 'Cant find client data'
-                })
+                });
 
                 return;
             }
