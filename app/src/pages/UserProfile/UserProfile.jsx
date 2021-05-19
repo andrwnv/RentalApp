@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, Form } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavItem, NavLink } from 'react-bootstrap';
 
 import { Icon } from '@iconify/react';
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
@@ -244,6 +244,29 @@ export default class UserProfile extends React.Component {
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
                         <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                            <Row>
+                                <img
+                                    className = 'objPic'
+                                    src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
+                                    alt = 'object pic'
+                                />
+                                <Col>
+                                    <h4>Object name</h4>
+                                    <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: 8 из 10</p>
+                                    <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
+                                </Col>
+
+                                {/*<button className = 'threeDotButton'>*/}
+                                {/*    <Icon icon = {threeDotsVertical} />*/}
+                                {/*</button>*/}
+                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
+                                    <NavLink eventKey={3.1}>Объявление</NavLink>
+                                    <NavLink eventKey={3.2}>Скачать договор</NavLink>
+                                </NavDropdown>
+                            </Row>
+                        </ListGroup.Item>
                     </ListGroup>
                 </Container>
 
@@ -272,9 +295,9 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
                                 </Col>
 
-                                <button className = 'threeDotButton'>
-                                    <Icon icon = {threeDotsVertical} />
-                                </button>
+                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
+                                    <NavLink eventKey={3.1}>Объявление</NavLink>
+                                </NavDropdown>
                             </Row>
                         </ListGroup.Item>
 
@@ -292,9 +315,9 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: </p>
                                 </Col>
 
-                                <button className = 'threeDotButton'>
-                                    <Icon icon = {threeDotsVertical} />
-                                </button>
+                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
+                                    <NavLink eventKey={3.1}>Объявление</NavLink>
+                                </NavDropdown>
                             </Row>
                         </ListGroup.Item>
                     </ListGroup>

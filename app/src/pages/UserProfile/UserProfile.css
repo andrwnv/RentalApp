@@ -32,3 +32,7 @@
     outline: inherit;
     max-height: 1em;
 }
+
+#basic-nav-dropdown::after{
+    display: none;
+}
