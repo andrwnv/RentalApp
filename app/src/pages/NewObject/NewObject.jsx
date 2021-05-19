@@ -47,6 +47,7 @@ export default function NewObject({history}) {
                     <img
                         className = "d-block w-100"
                         src = {URL.createObjectURL(file)}
+                        alt='c_item'
                     />
                 </Carousel.Item>
             );

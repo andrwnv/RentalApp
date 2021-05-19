@@ -165,7 +165,7 @@ export default class ObjectPage extends React.Component {
                                 }}
                                 className = 'd-block w-100'
                                 src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
-                                alt='carousel image'
+                                alt='carousel_image'
                             />
                         </Carousel.Item>
                         <Carousel.Item
@@ -183,7 +183,7 @@ export default class ObjectPage extends React.Component {
                                 }}
                                 className = 'd-block w-100'
                                 src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
-                                alt='carousel image'
+                                alt='carousel_image'
                             />
                         </Carousel.Item>
                     </Carousel>

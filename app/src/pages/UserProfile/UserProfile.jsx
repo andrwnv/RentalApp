@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavItem, NavLink } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavLink } from 'react-bootstrap';
 
 import { Icon } from '@iconify/react';
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
@@ -9,33 +9,6 @@ import './UserProfile.css';
 
 import Cookies from '../../services/cookies';
 import api from '../../services/api';
-
-import { Link } from '@material-ui/core';
-
-
-const CustomToggle = React.forwardRef(({children, onClick}, ref) => (
-    <a
-        href = ''
-        ref = {ref}
-        onClick = {e => {
-            e.preventDefault();
-            onClick(e);
-        }}
-    >
-        <Icon icon = {threeDotsVertical} />
-  </a>
-));
-
-// {/*<Dropdown>*/}
-// {/*    <Dropdown.Toggle as={CustomToggle} />*/}
-//
-// {/*    <Dropdown.Menu>*/}
-// {/*        <Dropdown.Item href = '#/action-1'>Action</Dropdown.Item>*/}
-// {/*        <Dropdown.Item href = '#/action-2'>Another action</Dropdown.Item>*/}
-// {/*        <Dropdown.Item href = '#/action-3'>Something else</Dropdown.Item>*/}
-// {/*    </Dropdown.Menu>*/}
-// {/*</Dropdown>*/}
-
 
 export default class UserProfile extends React.Component {
     constructor(props) {
@@ -77,15 +50,15 @@ export default class UserProfile extends React.Component {
     openDeleteModal = () => {
         this.setState({showDeleteModal: true});
 
-        const token = Cookies.get('token');
-        const headers = {
-            'Content-Type': 'application/pdf',
-            Accept: 'application/json',
-            token: `${token}`
-        };
-
-        const data = { land_id: 66 };
-        console.log(token);
+        // const token = Cookies.get('token');
+        // const headers = {
+        //     'Content-Type': 'application/pdf',
+        //     Accept: 'application/json',
+        //     token: `${token}`
+        // };
+        //
+        // const data = { land_id: 66 };
+        // console.log(token);
 
         // api.get('http://localhost:3080/client/create_lease', {
         //     params: {
@@ -196,6 +169,7 @@ export default class UserProfile extends React.Component {
                             <img
                                 src = {this.state.userProfilePic}
                                 className = 'userPic'
+                                alt='user_profile_image'
                             />
 
                             <Button

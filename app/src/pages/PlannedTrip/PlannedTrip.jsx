@@ -44,8 +44,8 @@ export default class PlannedTrip extends React.Component {
         const selectedDate = new Date(this.state.beginDate);
         const today = new Date();
 
-        if (selectedDate.getTime() <= today.getTime()) {
-            alert("Поля даты заполнены некоректно!");
+        if( selectedDate.getTime() <= today.getTime() ) {
+            alert('Поля даты заполнены некоректно!');
             return;
         }
 
@@ -57,7 +57,7 @@ export default class PlannedTrip extends React.Component {
         };
 
         let comfortData = [];
-        this.state.comfortData.forEach((val, index) => {
+        this.state.comfortData.forEach((val, _) => {
             comfortData.push(val.label);
         });
 
