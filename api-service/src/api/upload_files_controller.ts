@@ -197,17 +197,15 @@ class UploadFilesController {
 
 
             const file = createLease(req.user, landData, `lease_${landData.get('id')}_${landData.get('FK_landLord')}`);
+            setTimeout(() => {
+                let _file = fs.createReadStream(file);
 
-            // res.status(200).download(file, err => {
-            //     console.log(err);
-            // });
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
+                _file.pipe(res);
 
-            var _file = fs.createReadStream(file);
-            var stat = fs.statSync(file);
-            res.setHeader('Content-Length', stat.size);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
-            _file.pipe(res);
+                fs.unlinkSync(file);
+            }, 500);
         } catch(err) {
             console.log(err);
             res.status(500).json({

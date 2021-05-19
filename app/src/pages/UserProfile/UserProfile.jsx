@@ -10,6 +10,9 @@ import './UserProfile.css';
 import Cookies from '../../services/cookies';
 import api from '../../services/api';
 
+const FileSaver = require('file-saver');
+
+
 export default class UserProfile extends React.Component {
     constructor(props) {
         super(props);
@@ -47,44 +50,30 @@ export default class UserProfile extends React.Component {
         this.setState({showDeleteModal: false});
     }
 
+    downloadLease = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/pdf',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = { land_id: 66 };
+
+        api.request({
+            url: 'http://localhost:3080/client/create_lease',
+            method: 'GET',
+            params: data,
+            headers: headers,
+            responseType: 'blob', // important
+        }).then((response) => {
+            let blob = new Blob([response.data]);
+            FileSaver.saveAs(blob, `lease_${Math.random()}.pdf`);
+        });
+    }
+
     openDeleteModal = () => {
         this.setState({showDeleteModal: true});
-
-        // const token = Cookies.get('token');
-        // const headers = {
-        //     'Content-Type': 'application/pdf',
-        //     Accept: 'application/json',
-        //     token: `${token}`
-        // };
-        //
-        // const data = { land_id: 66 };
-        // console.log(token);
-
-        // api.get('http://localhost:3080/client/create_lease', {
-        //     params: {
-        //         land_id: 66
-        //     },
-        //     headers
-        // }).then(res => {
-        //     console.log(res);
-        // });
-
-        // api.request({
-        //     url: 'http://localhost:3080/client/create_lease',
-        //     method: 'GET',
-        //     params: {
-        //         land_id: 66
-        //     },
-        //     headers: headers,
-        //     responseType: 'blob', // important
-        // }).then((response) => {
-        //     const url = window.URL.createObjectURL(new Blob([response.data]));
-        //     const link = document.createElement('a');
-        //     link.href = url;
-        //     link.setAttribute('download', 'lease.pdf');
-        //     document.body.appendChild(link);
-        //     link.click();
-        // });
     }
 
     deleteAccount = () => {
@@ -232,12 +221,9 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
                                 </Col>
 
-                                {/*<button className = 'threeDotButton'>*/}
-                                {/*    <Icon icon = {threeDotsVertical} />*/}
-                                {/*</button>*/}
                                 <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
                                     <NavLink eventKey={3.1}>Объявление</NavLink>
-                                    <NavLink eventKey={3.2}>Скачать договор</NavLink>
+                                    <NavLink eventKey={3.2} onSelect={this.downloadLease}>Скачать договор</NavLink>
                                 </NavDropdown>
                             </Row>
                         </ListGroup.Item>
