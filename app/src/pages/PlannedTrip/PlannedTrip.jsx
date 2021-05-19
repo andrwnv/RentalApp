@@ -41,6 +41,14 @@ export default class PlannedTrip extends React.Component {
     }
 
     createTrip = () => {
+        const selectedDate = new Date(this.state.beginDate);
+        const today = new Date();
+
+        if (selectedDate.getTime() <= today.getTime()) {
+            alert("Поля даты заполнены некоректно!");
+            return;
+        }
+
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/json',
