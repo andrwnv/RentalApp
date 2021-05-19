@@ -1,4 +1,5 @@
 import express from 'express';
+import * as fs from 'fs';
 
 import { generateMD5 } from '../utils/MD5_generator';
 import Client from '../models/types/client_type';
@@ -129,15 +130,86 @@ class UploadFilesController {
 
     async generatePDFLease(req: express.Request, res: express.Response): Promise<void> {
         try {
-            createLease();
+            if ( req.user == undefined ) {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'Cant find client data'
+                });
 
-            res.status(201).json({
-                status: 'Success',
-                data: {
-                    title: 'Files loading to cloudinary.',
-                }
+                return;
+            }
+
+            if ( req.query.land_id == undefined ) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'Cant find land data'
+                });
+
+                return;
+            }
+
+            const landData = await Connection.models.object.findOne({
+                where: {
+                    id: req.query.land_id,
+                },
+                include: [
+                    {
+                        model: Connection.models.clients,
+                        required: true,
+                        attributes: ['firstName', 'lastName']
+                    },
+                    {
+                        model: Connection.models.street,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.country,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.locality,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.localityType,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.objectType,
+                        required: true,
+                        attributes: ['typeName']
+                    }
+                ]
             });
+
+            if ( landData == undefined ) {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'Cant find land data'
+                });
+
+                return;
+            }
+
+
+            const file = createLease(req.user, landData, `lease_${landData.get('id')}_${landData.get('FK_landLord')}`);
+
+            // res.status(200).download(file, err => {
+            //     console.log(err);
+            // });
+
+            var _file = fs.createReadStream(file);
+            var stat = fs.statSync(file);
+            res.setHeader('Content-Length', stat.size);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
+            _file.pipe(res);
         } catch(err) {
+            console.log(err);
             res.status(500).json({
                 status: 'Error',
                 data: err

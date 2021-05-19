@@ -22,7 +22,7 @@ clientsRouter.post('/login',
     passport.authenticate('local'),
     UserCtrl.loginConfirmed);
 
-clientsRouter.get('/create_lease', UploadFileCtrl.generatePDFLease);
+clientsRouter.get('/create_lease', passport.authenticate('jwt', { session: false }), UploadFileCtrl.generatePDFLease);
 
 clientsRouter.get('/signup/verify', UserCtrl.verify);
 clientsRouter.post('/signup', RegisterValidate, UserCtrl.create);

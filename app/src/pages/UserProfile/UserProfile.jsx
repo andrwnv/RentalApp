@@ -76,6 +76,42 @@ export default class UserProfile extends React.Component {
 
     openDeleteModal = () => {
         this.setState({showDeleteModal: true});
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/pdf',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = { land_id: 66 };
+        console.log(token);
+
+        // api.get('http://localhost:3080/client/create_lease', {
+        //     params: {
+        //         land_id: 66
+        //     },
+        //     headers
+        // }).then(res => {
+        //     console.log(res);
+        // });
+
+        // api.request({
+        //     url: 'http://localhost:3080/client/create_lease',
+        //     method: 'GET',
+        //     params: {
+        //         land_id: 66
+        //     },
+        //     headers: headers,
+        //     responseType: 'blob', // important
+        // }).then((response) => {
+        //     const url = window.URL.createObjectURL(new Blob([response.data]));
+        //     const link = document.createElement('a');
+        //     link.href = url;
+        //     link.setAttribute('download', 'lease.pdf');
+        //     document.body.appendChild(link);
+        //     link.click();
+        // });
     }
 
     deleteAccount = () => {
@@ -85,7 +121,7 @@ export default class UserProfile extends React.Component {
     }
 
     loadNewUserPicModal = () => {
-        if (this.newUserPic === null) {
+        if( this.newUserPic === null ) {
             alert('Вы не выбрали файл!');
             return;
         }
@@ -142,7 +178,7 @@ export default class UserProfile extends React.Component {
                                }}
                            />
 
-                        <Button variant = 'secondary' onClick={this.loadNewUserPicModal}>
+                        <Button variant = 'secondary' onClick = {this.loadNewUserPicModal}>
                             Обновить
                         </Button>
                     </Modal.Body>
