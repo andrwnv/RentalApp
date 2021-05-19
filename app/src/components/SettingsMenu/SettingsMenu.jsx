@@ -14,9 +14,9 @@ export default function SettingsMenu() {
             <NavDropdown.Item href = '/current_user'>
                 <img
                     src = {localStorage.getItem('photoLink')} style = {{
-                    borderRadius: '100%',
-                    maxWidth: '20px',
-                    maxHeight: '20px',
+                    borderRadius: '50%',
+                    width: '2em',
+                    height: '2em',
                     marginRight: '15px',
                     objectFit: 'cover',
                 }} alt = {''}
