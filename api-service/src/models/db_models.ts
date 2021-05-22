@@ -1,6 +1,4 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import Faker from 'faker';
-import _ from 'lodash';
 
 const Connection = new Sequelize(
     'coursework_db',
@@ -156,6 +154,10 @@ const BookedObject = Connection.define(TablesName.BookedObject, {
     endDate: {
         type: DataTypes.DATEONLY,
         allowNull: false
+    },
+    confirmed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 });
 
@@ -263,6 +265,10 @@ const RentalObject = Connection.define(TablesName.Object, {
     },
     apartmentNumber: {
         type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    additionalComfortProps: {
+        type: DataTypes.JSON,
         allowNull: true
     }
 });
