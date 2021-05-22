@@ -9,6 +9,7 @@ import './UserProfile.css';
 
 import Cookies from '../../services/cookies';
 import api from '../../services/api';
+import cookies from '../../services/cookies';
 
 const FileSaver = require('file-saver');
 
@@ -60,7 +61,7 @@ export default class UserProfile extends React.Component {
                                 alt = 'object pic'
                             />
                             <Col>
-                                <h4>Object name</h4>
+                                <h4>{object.title}</h4>
                                 <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
                                 <p className = 'objInnerText'>Средняя оценка: {object.rating} из 10</p>
                             </Col>
@@ -122,8 +123,20 @@ export default class UserProfile extends React.Component {
 
     deleteAccount = () => {
         this.setState({showDeleteModal: false});
-        Cookies.remove('token', {path: '/', domain: 'http://localhost:3000'});
-        this.history.push('/');
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.delete('http://localhost:3080/client/delete', {headers}).then(_ => {
+            cookies.remove('token', {path: '/'});
+            this.history.push('/');
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     loadNewUserPicModal = () => {
