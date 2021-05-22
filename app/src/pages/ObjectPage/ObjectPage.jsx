@@ -33,26 +33,7 @@ export default class ObjectPage extends React.Component {
         this.counter = 1;
         this.carouselItems = [];
         this.comfortProps = [];
-        this.products = [
-            {
-                id: 1,
-                name: '',
-                price: '25',
-                selected: false
-            },
-            {
-                id: 2,
-                name: '',
-                price: '20',
-                selected: false
-            },
-            {
-                id: 3,
-                name: '',
-                price: '100',
-                selected: false
-            }
-        ];
+        this.products = [];
 
         this.header = {
             headers: {
@@ -65,6 +46,13 @@ export default class ObjectPage extends React.Component {
         api.get(`http://localhost:3080/rent_ads/${this.objectId}`, this.header).then(res => {
             const objectData = res.data.data;
             console.log(objectData);
+
+            if (objectData.additionalComfortProps) {
+                this.products = [];
+                objectData.additionalComfortProps.forEach(data => {
+                    this.products.push(data);
+                });
+            }
 
             if( objectData.mediaLinks.urls.length !== 0 ) {
                 this.carouselItems = [];
