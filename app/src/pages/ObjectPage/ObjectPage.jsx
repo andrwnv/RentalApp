@@ -3,25 +3,36 @@ import { Container, Button, Col, Row, ListGroup, Modal, Carousel, Form } from 'r
 import BootstrapTable from 'react-bootstrap-table-next';
 import { Icon } from '@iconify/react';
 
+import api from '../../services/api';
+import Cookies from '../../services/cookies';
+
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
 import Header from '../../components/Header/Header';
 
-// import Cookies from '../../services/cookies';
 
 export default class ObjectPage extends React.Component {
     constructor(props) {
         super(props);
+        this.props = props;
+
+        this.objectId = this.props.match.params.objectId;
 
         this.state = {
             features: [],
             showBookingModal: false,
             showBookingModalError: false,
             endDate: '',
-            beginDate: ''
+            beginDate: '',
+            name: '',
+            desc: '',
+            price: 150,
+            route: ''
         }
 
         this.history = props.history;
         this.counter = 1;
+        this.carouselItems = [];
+        this.comfortProps = [];
         this.products = [
             {
                 id: 1,
@@ -43,7 +54,57 @@ export default class ObjectPage extends React.Component {
             }
         ];
 
-        this.price = 150;
+        this.header = {
+            headers: {
+                'token': Cookies.get('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        };
+
+        api.get(`http://localhost:3080/rent_ads/${this.objectId}`, this.header).then(res => {
+            const objectData = res.data.data;
+            console.log(objectData);
+
+            if( objectData.mediaLinks.urls.length !== 0 ) {
+                this.carouselItems = [];
+                objectData.mediaLinks.urls.forEach((val, _) => {
+                    this.carouselItems.push(
+                        <Carousel.Item>
+                            <img
+                                style = {{
+                                    height: ' 30em',
+                                    backgroundPosition: 'center center',
+                                    backgroundRepeat: 'no-repeat',
+                                    objectFit: 'cover'
+                                }}
+                                className = 'd-block w-100'
+                                src = {val}
+                                alt = 'carousel_image'
+                            />
+                        </Carousel.Item>
+                    );
+                });
+            }
+
+            if( objectData.comfortProps !== null ) {
+                this.comfortProps = [];
+                objectData.comfortProps.forEach((res, _) => {
+                    this.comfortProps.push(
+                        <ListGroup.Item>{res}</ListGroup.Item>
+                    );
+                });
+            }
+
+            this.setState({
+                name: objectData.title,
+                desc: objectData.description,
+                price: objectData.price,
+                route: `${objectData.objectType.typeName}: ${objectData.country.name}, ${objectData.localityType.name} ${objectData.locality.name}, ${objectData.street.name} ${objectData.houseNumber}`
+            });
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     columns = [
@@ -83,10 +144,10 @@ export default class ObjectPage extends React.Component {
     }
 
     calcSum() {
-        let totalSum = this.price;
+        let totalSum = this.state.price;
 
         this.products.forEach(val => {
-            if (val.selected) {
+            if( val.selected ) {
                 totalSum += parseInt(val.price);
             }
         });
@@ -106,9 +167,9 @@ export default class ObjectPage extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         Вы выбрали даты с {this.state.beginDate} по {this.state.endDate}
-                        <br/>
+                        <br />
                         Финальная сумма будет равна: {this.calcSum()} руб.
-                        <br/>
+                        <br />
                         Вы действительно хотите ЗАБРОНИРОВАТЬ объект?
                     </Modal.Body>
                     <Modal.Footer>
@@ -121,13 +182,21 @@ export default class ObjectPage extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show = {this.state.showBookingModalError} onHide = {() => { this.setState({showBookingModalError: false}) }}>
+                <Modal
+                    show = {this.state.showBookingModalError} onHide = {() => {
+                    this.setState({showBookingModalError: false})
+                }}
+                >
                     <Modal.Header closeButton>
                         <Modal.Title>Бронирование объекта</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Все поля дат должны быть заполнены верно!</Modal.Body>
                     <Modal.Footer>
-                        <Button variant = 'secondary' onClick = {() => { this.setState({showBookingModalError: false}) }}>
+                        <Button
+                            variant = 'secondary' onClick = {() => {
+                            this.setState({showBookingModalError: false})
+                        }}
+                        >
                             Хорошо
                         </Button>
                     </Modal.Footer>
@@ -142,10 +211,11 @@ export default class ObjectPage extends React.Component {
                 >
                     <Container style = {{marginBottom: '1em'}}>
                         <h2 style = {{marginLeft: '-0.5em'}}>
-                            Object Name Object Name
+                            {this.state.name}
                         </h2>
+                        <p style = {{marginLeft: '-0.8em'}}>{this.state.route}</p>
                         <h2 style = {{marginLeft: '-0.5em'}}>
-                            Стоимость: {this.price} руб/день
+                            Стоимость: {this.state.price} руб/день
                         </h2>
                     </Container>
 
@@ -154,38 +224,7 @@ export default class ObjectPage extends React.Component {
                             marginBottom: '8px'
                         }}
                     >
-                        <Carousel.Item>
-                            <img
-                                style = {{
-                                    // width: '100px',
-                                    height: ' 30em',
-                                    backgroundPosition: 'center center',
-                                    backgroundRepeat: 'no-repeat',
-                                    objectFit: 'cover'
-                                }}
-                                className = 'd-block w-100'
-                                src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
-                                alt='carousel_image'
-                            />
-                        </Carousel.Item>
-                        <Carousel.Item
-                            style = {{
-                                height: '30em'
-                            }}
-                        >
-                            <img
-                                style = {{
-                                    // width: '100px',
-                                    height: ' 30em',
-                                    backgroundPosition: 'center center',
-                                    backgroundRepeat: 'no-repeat',
-                                    objectFit: 'cover'
-                                }}
-                                className = 'd-block w-100'
-                                src = 'https://pro-spo.ru/images/stories/2014/elitefon.ru-38277.jpg'
-                                alt='carousel_image'
-                            />
-                        </Carousel.Item>
+                        {this.carouselItems.length === 0 ? <h2>Картинок объекта нет</h2> : this.carouselItems}
                     </Carousel>
                 </Container>
 
@@ -201,14 +240,7 @@ export default class ObjectPage extends React.Component {
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
                         <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                            На первый взгляд судно неплохое, в относительно хорошем состоянии, хотя и 92 года постройки. Экипаж 19 человек - 11 русских и 8 филиппинцев, включая повара.
-                            Говорят, периодически становится тоскливо от егошних кулинарных изысков.
-                            Филиппинцы здесь рядовой состав, за ними постоянно нужно следить чтобы не натворили чего, среди них только один матрос по-настоящему ответственный и с руками из нужного места, все понимает с полуслова. Остальные - типичные Равшаны да Джамшуты.
-                            А еще один из них - гомосек О___о, в добавок к этому он опасный человек, в том плане, что легко впадает в состояние ступора и отключает мозг: был случай как он закрыл одного матроса в трюме, тот орал и тарабанил внутри, это заметил боцман,
-                            начал орать на этого персонажа, который, в свою очередь испуганно выпучив глаза, трясущимися руками продолжал закручивать барашки. В итоге боцман его отодвинул и выпустил матроса из трюма.
-                            Общение на английском языке, но из-за акцента не всегда с первого раз понятно что филиппинцы говорят, особенно по рации.
-                            <br />
-                            Напимер, говорит он тебе: Бикарпуль! Бикарпуль! А потом, когда уже поздно, выясняется что это было "Be careful!"
+                            {this.state.desc === '' ? 'Владелец не добавил описание' : this.state.desc}
                         </ListGroup.Item>
                     </ListGroup>
                 </Container>
@@ -224,10 +256,7 @@ export default class ObjectPage extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item>Cras justo odio</ListGroup.Item>
-                        <ListGroup.Item>Cras justo odio</ListGroup.Item>
-                        <ListGroup.Item>Cras justo odio</ListGroup.Item>
-                        <ListGroup.Item>Cras justo odio</ListGroup.Item>
+                        {this.comfortProps.length === 0 ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Владелец не указал условия</ListGroup.Item> : this.comfortProps}
                     </ListGroup>
                 </Container>
 
@@ -245,10 +274,10 @@ export default class ObjectPage extends React.Component {
                         <Col>
                            <p style = {{textAlign: 'center'}}>Дата начала</p>
                             <Form.Control
-                                onChange={(event) => {
+                                onChange = {(event) => {
                                     this.setState({beginDate: event.target.value});
                                 }}
-                                value={this.state.beginDate}
+                                value = {this.state.beginDate}
                                 type = 'date' name = 'beginDate'
                                 style = {{
                                     width: '50%',
@@ -261,12 +290,16 @@ export default class ObjectPage extends React.Component {
                         </Col>
                         <Col>
                             <p style = {{textAlign: 'center'}}>Дата окончания</p>
-                            <Form onSubmit={() => { console.log('IM HERE') }}>
+                            <Form
+                                onSubmit = {() => {
+                                    console.log('IM HERE')
+                                }}
+                            >
                                 <Form.Control
-                                    onChange={(event) => {
+                                    onChange = {(event) => {
                                         this.setState({endDate: event.target.value});
                                     }}
-                                    value={this.state.endDate}
+                                    value = {this.state.endDate}
                                     type = 'date' name = 'endDate'
                                     style = {{
                                         width: '50%',
@@ -292,8 +325,8 @@ export default class ObjectPage extends React.Component {
                     <Row className = 'justify-content-md-center'>
                         <Button
                             style = {{width: '50%'}} variant = 'secondary'
-                            onClick={() => {
-                                if (this.state.endDate === '' || this.state.beginDate === '' || this.state.beginDate === this.state.endDate ||
+                            onClick = {() => {
+                                if( this.state.endDate === '' || this.state.beginDate === '' || this.state.beginDate === this.state.endDate ||
                                     (new Date(this.state.endDate) <= (new Date())) || (new Date(this.state.beginDate) <= (new Date()))
                                 ) {
                                     this.setState({showBookingModalError: true});

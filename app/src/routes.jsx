@@ -18,7 +18,7 @@ const Routes = () => {
                 <Route path = '/register' exact component = {Reg} />
                 <Route path = '/' exact component = {Login} />
                 <ProtectedRoute path = '/current_user' component = {UserProfile} />
-                <ProtectedRoute path = '/ad' component = {ObjectPage} />
+                <ProtectedRoute path = '/ad/:objectId' component = {ObjectPage} />
                 <ProtectedRoute path = '/dashboard' component = {Dashboard} />
                 <ProtectedRoute path = '/new' component = {NewObject} />
                 <ProtectedRoute path = '/plane_trip' component = {PlannedTrip} />

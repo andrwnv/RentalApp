@@ -12,7 +12,7 @@ import { Ads } from '../../components/Ads/Ads';
 import Cookies from '../../services/cookies';
 
 export default function Dashboard() {
-    const [data, setData] = useState();
+    const [data, setData] = useState(undefined);
     const [isEndData, setIsEndData] = useState(false);
     const [buttonText, setButtonText] = useState('Загрузить еще...');
 
@@ -58,7 +58,7 @@ export default function Dashboard() {
             }
 
             jsxData[curIndex].push(<Ads name = {obj.title + obj.id} desc = {obj.description}
-                                        picLinks = {obj.mediaLinks.urls[0]} />);
+                                        picLinks = {obj.mediaLinks.urls[0]} objectId = {obj.id}/>);
         });
     }
 
