@@ -26,7 +26,7 @@ clientsRouter.get('/create_lease', passport.authenticate('jwt', { session: false
 
 clientsRouter.get('/signup/verify', UserCtrl.verify);
 clientsRouter.post('/signup', RegisterValidate, UserCtrl.create);
-clientsRouter.delete('/delete', UserCtrl.delete);
+clientsRouter.delete('/delete', passport.authenticate('jwt', { session: false }), UserCtrl.delete);
 clientsRouter.get('/current_user', passport.authenticate('jwt', { session: false }), UserCtrl.getCurrentUserInfo);
 
 clientsRouter.get('/:id', UserCtrl.show);

@@ -8,6 +8,7 @@ import isAdminUser from './checks/is_admin_check';
 
 import { generateMD5 } from '../utils/MD5_generator';
 import { sendMail } from '../utils/send_mail';
+import Client from '../models/types/client_type';
 
 
 class UserController {
@@ -148,21 +149,90 @@ class UserController {
     }
 
     // TODO: update req.
-    async update(req: express.Request, res: express.Response): Promise<void> {
+    async update(_: express.Request, _: express.Response): Promise<void> {
 
     }
 
     async delete(req: express.Request, res: express.Response): Promise<void> {
         try {
-            const userEMail = req.query.eMail;
-
+            const _userReqData = req.user as Client;
             const user = await Connection.models.clients.findOne({
                 where: {
-                    eMail: userEMail
+                    id: _userReqData.id
                 }
             });
 
             if ( user ) {
+                const userObjects = await Connection.models.object.findOne({
+                    where: {
+                        FK_landLord: _userReqData.id
+                    }
+                });
+
+                const userPlannedTrips = await Connection.models.clientPlannedTrips.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userObjectReview  = await Connection.models.objectReview.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userBookedObject  = await Connection.models.bookedObject.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userBookedHistory  = await Connection.models.userBookedHistory.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userRentedObject  = await Connection.models.rentedObject.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userRentalHistory  = await Connection.models.userRentalHistory.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                const userClientReview  = await Connection.models.clientReview.findOne({
+                    where: {
+                        FK_landLord: _userReqData.id,
+                    }
+                });
+
+                const _userClientReview  = await Connection.models.clientReview.findOne({
+                    where: {
+                        FK_client: _userReqData.id,
+                    }
+                });
+
+                const reports  = await Connection.models.reports.findOne({
+                    where: {
+                        FK_client: _userReqData.id
+                    }
+                });
+
+                userObjects?.destroy();
+                userPlannedTrips?.destroy();
+                userObjectReview?.destroy();
+                userBookedObject?.destroy();
+                userBookedHistory?.destroy();
+                userRentedObject?.destroy();
+                userRentalHistory?.destroy();
+                userClientReview?.destroy();
+                _userClientReview?.destroy();
+                reports?.destroy();
                 await user.destroy();
 
                 res.status(200).json({

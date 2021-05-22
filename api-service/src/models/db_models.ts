@@ -430,6 +430,13 @@ UserRentalHistory.belongsTo(RentalObject, {
     }
 });
 
+UserRentalHistory.belongsTo(Client, {
+    foreignKey: {
+        name: 'FK_client',
+        allowNull: false
+    }
+});
+
 RentalObject.belongsTo(Client, {
     foreignKey: {
         name: 'FK_landLord',

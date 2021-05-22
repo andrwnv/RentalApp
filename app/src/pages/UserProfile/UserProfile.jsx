@@ -23,7 +23,8 @@ export default class UserProfile extends React.Component {
             userProfilePic: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
             firstName: '',
             lastName: '',
-            userRating: 0
+            userRating: 0,
+            userObjects: []
         }
 
         this.history = props.history;
@@ -44,6 +45,49 @@ export default class UserProfile extends React.Component {
                 userRating: res.data.data.rating
             });
         });
+
+        api.get('http://localhost:3080/rent_ads/user_ads', {headers}).then(res => {
+            let objects = [];
+
+            res.data.data.forEach(object => {
+                objects.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                        <Row>
+                            <img
+                                className = 'objPic'
+                                src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                                                           : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                alt = 'object pic'
+                            />
+                            <Col>
+                                <h4>Object name</h4>
+                                <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
+                                <p className = 'objInnerText'>Средняя оценка: {object.rating} из 10</p>
+                            </Col>
+
+                            <NavDropdown
+                                title = {<div style = {{display: 'inline-block'}}> <Icon
+                                    icon = {threeDotsVertical}
+                                /> </div>} id = 'basic-nav-dropdown'
+                            >
+                                <NavLink eventKey = {3.1} href={`/ad/${object.id}`}>Объявление</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => {
+                                    const data = {objectId: object.id};
+                                    api.delete('http://localhost:3080/rent_ads/', {headers, data})
+                                        .catch(err => {
+                                            console.log(err);
+                                        });
+                                }}>
+                                    Удалить
+                                </NavLink>
+                            </NavDropdown>
+                        </Row>
+                    </ListGroup.Item>
+                );
+            });
+
+            this.setState({userObjects: objects});
+        });
     }
 
     handleClose = () => {
@@ -58,7 +102,7 @@ export default class UserProfile extends React.Component {
             token: `${token}`
         };
 
-        const data = { land_id: 66 };
+        const data = {land_id: 66};
 
         api.request({
             url: 'http://localhost:3080/client/create_lease',
@@ -158,7 +202,7 @@ export default class UserProfile extends React.Component {
                             <img
                                 src = {this.state.userProfilePic}
                                 className = 'userPic'
-                                alt='user_profile_image'
+                                alt = 'user_profile_image'
                             />
 
                             <Button
@@ -191,7 +235,11 @@ export default class UserProfile extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                        {this.state.userObjects.length === 0
+                            ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                            : this.state.userObjects
+                        }
+
                     </ListGroup>
                 </Container>
 
@@ -221,9 +269,13 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
                                 </Col>
 
-                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
-                                    <NavLink eventKey={3.1}>Объявление</NavLink>
-                                    <NavLink eventKey={3.2} onSelect={this.downloadLease}>Скачать договор</NavLink>
+                                <NavDropdown
+                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                        icon = {threeDotsVertical}
+                                    /> </div>} id = 'basic-nav-dropdown'
+                                >
+                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
+                                    <NavLink eventKey = {3.2} onSelect = {this.downloadLease}>Скачать договор</NavLink>
                                 </NavDropdown>
                             </Row>
                         </ListGroup.Item>
@@ -255,8 +307,12 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
                                 </Col>
 
-                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
-                                    <NavLink eventKey={3.1}>Объявление</NavLink>
+                                <NavDropdown
+                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                        icon = {threeDotsVertical}
+                                    /> </div>} id = 'basic-nav-dropdown'
+                                >
+                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
                                 </NavDropdown>
                             </Row>
                         </ListGroup.Item>
@@ -275,8 +331,12 @@ export default class UserProfile extends React.Component {
                                     <p className = 'objInnerText'>Ваша оценка: </p>
                                 </Col>
 
-                                <NavDropdown title={<div style={{display: "inline-block"}}> <Icon icon = {threeDotsVertical} /> </div>} id="basic-nav-dropdown">
-                                    <NavLink eventKey={3.1}>Объявление</NavLink>
+                                <NavDropdown
+                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                        icon = {threeDotsVertical}
+                                    /> </div>} id = 'basic-nav-dropdown'
+                                >
+                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
                                 </NavDropdown>
                             </Row>
                         </ListGroup.Item>

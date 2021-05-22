@@ -211,8 +211,37 @@ class RentingAdsController {
 
     async delete(req: express.Request, res: express.Response) {
         try {
+            const landlord = req.user as Client;
 
+            const object = await Connection.models.object.findOne({
+                where: {
+                    id: req.body.objectId
+                }
+            });
 
+            if (!object) {
+                res.status(404).json({
+                    status: 'Error',
+                    data: 'Cant find object with this objectId'
+                });
+
+                return;
+            }
+
+            if ( landlord.id === object.get('FK_landLord') ) {
+                object.destroy().then();
+
+                res.status(200).json({
+                    status: 'Success',
+                    data: 'Object deleted!'
+                });
+            }
+            else {
+                res.status(406).json({
+                    status: 'Error',
+                    data: 'Accept error!'
+                });
+            }
         } catch(err) {
             res.status(500).json({
                 status: 'Error',
@@ -221,8 +250,26 @@ class RentingAdsController {
         }
     }
 
-    async userAds(_: express.Request, __: express.Response) {
+    async userAds(req: express.Request, res: express.Response) {
+        try {
+            const landlord = req.user as Client;
 
+            const userAds = await Connection.models.object.findAll({
+                where: {
+                    FK_landLord: landlord.id
+                }
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: userAds
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
     }
 }
 
