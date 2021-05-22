@@ -149,7 +149,7 @@ class UserController {
     }
 
     // TODO: update req.
-    async update(_: express.Request, _: express.Response): Promise<void> {
+    async update(_: express.Request, __: express.Response): Promise<void> {
 
     }
 
