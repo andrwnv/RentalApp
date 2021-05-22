@@ -34,6 +34,7 @@ export default function NewObject({history}) {
     const [apiHouseTypes, setApiHouseType] = useState([]);
 
     const [comfortData, setComfortData] = useState([]);
+    const [products, setProduct] = useState([]);
 
     const [files, setFiles] = useState(null);
     const photos = [];
@@ -78,6 +79,8 @@ export default function NewObject({history}) {
             comfortProps.push(data.label);
         });
 
+        const addComfort = products.filter(el => ( el.name.length !== 0 && el.price.length !== 0 ));
+
         const data = {
             title: title,
             description: description,
@@ -88,7 +91,8 @@ export default function NewObject({history}) {
             locality: locality,
             houseNumber: houseNumber,
             objectType: houseType,
-            comfortProps: comfortProps
+            comfortProps: comfortProps,
+            addComfortProps: addComfort.length === 0 ? null : addComfort
         }
 
         const token = Cookies.get('token');
@@ -108,7 +112,7 @@ export default function NewObject({history}) {
                     formData.append('adImages', file);
                 });
 
-                api.post('http://localhost:3080/rent_ads/upload_photos?land_id=' + res.data.data.item_id, formData, {headers}).then(res => {
+                api.post('http://localhost:3080/rent_ads/upload_photos?land_id=' + res.data.data.item_id, formData, {headers}).then(_ => {
                     alert('Файлы отправлены!');
                 });
             }
@@ -200,9 +204,6 @@ export default function NewObject({history}) {
         });
     }
 
-
-    const [products, setProduct] = useState([]);
-
     const columns = [
         {
             dataField: 'id',
@@ -225,6 +226,7 @@ export default function NewObject({history}) {
             price: ''
         }]));
 
+        console.log(products);
         counter++;
     }
 

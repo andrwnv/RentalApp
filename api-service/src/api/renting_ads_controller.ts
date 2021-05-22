@@ -94,7 +94,8 @@ class RentingAdsController {
                 FK_street: street.get('id'),
                 FK_objectType: objectType.get('id'),
                 houseNumber: req.body.houseNumber,
-                comfortProps: req.body.comfortProps
+                comfortProps: req.body.comfortProps,
+                additionalComfortProps: req.body.addComfortProps
             };
 
             const _newAd = await Connection.models.object.create(adData);
@@ -139,7 +140,8 @@ class RentingAdsController {
                             name: street.get('name'),
                         },
                         houseNumber: req.body.houseNumber
-                    }
+                    },
+                    additionalComfortProps: req.body.addComfortProps
                 }
             });
         } catch(err) {
@@ -217,10 +219,6 @@ class RentingAdsController {
                 data: err
             });
         }
-    }
-
-    async update(_: express.Request, __: express.Response) {
-
     }
 
     async userAds(_: express.Request, __: express.Response) {

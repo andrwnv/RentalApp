@@ -18,7 +18,6 @@ const rentAdsRouter = express.Router();
 rentAdsRouter.get('/all', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
 rentAdsRouter.post('/', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.newAd);
 rentAdsRouter.delete('/', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);
-rentAdsRouter.patch('/', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.update);
 rentAdsRouter.get('/user_ads', passport.authenticate('jwt', { session: false }), NewRentAdValidate, RentingAdsCtrl.userAds);
 rentAdsRouter.post('/upload_photos', passport.authenticate('jwt', { session: false }),
     upload.array('adImages', 10), UploadFileCtrl.uploadAdPhotos);
