@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavLink } from 'react-bootstrap';
 
 import { Icon } from '@iconify/react';
+import Rating from '@material-ui/lab/Rating';
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
 
 import Header from '../../components/Header/Header';
@@ -63,7 +64,7 @@ export default class UserProfile extends React.Component {
                             <Col>
                                 <h4>{object.title}</h4>
                                 <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
-                                <p className = 'objInnerText'>Средняя оценка: {object.rating} из 10</p>
+                                <Rating name="size-small" value={object.rating} max={10} readOnly />
                             </Col>
 
                             <NavDropdown
@@ -228,7 +229,8 @@ export default class UserProfile extends React.Component {
                         </div>
                         <Col>
                             <h3>{this.state.firstName} {this.state.lastName}</h3>
-                            <h4>Рейтинг: {this.state.userRating} из 10</h4>
+                            <h4>Рейтинг:</h4>
+                            <Rating name="size-small" value={this.state.userRating} max={10} size="large" readOnly />
                         </Col>
 
                         <Button style = {{width: '15%'}} variant = 'danger' onClick = {this.openDeleteModal}>
@@ -278,8 +280,8 @@ export default class UserProfile extends React.Component {
                                 <Col>
                                     <h4>Object name</h4>
                                     <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: 8 из 10</p>
-                                    <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
                                 </Col>
 
                                 <NavDropdown
@@ -316,8 +318,8 @@ export default class UserProfile extends React.Component {
                                 <Col>
                                     <h4>Object name</h4>
                                     <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: 8 из 10</p>
-                                    <p className = 'objInnerText'>Ваша оценка: 7 из 10</p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
                                 </Col>
 
                                 <NavDropdown
@@ -340,8 +342,8 @@ export default class UserProfile extends React.Component {
                                 <Col>
                                     <h4>Object name</h4>
                                     <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: 8 из 10</p>
-                                    <p className = 'objInnerText'>Ваша оценка: </p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
                                 </Col>
 
                                 <NavDropdown

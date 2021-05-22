@@ -8,6 +8,7 @@ import Cookies from '../../services/cookies';
 
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
 import Header from '../../components/Header/Header';
+import Rating from '@material-ui/lab/Rating';
 
 
 export default class ObjectPage extends React.Component {
@@ -26,7 +27,8 @@ export default class ObjectPage extends React.Component {
             name: '',
             desc: '',
             price: 150,
-            route: ''
+            route: '',
+            rating: 0
         }
 
         this.history = props.history;
@@ -47,7 +49,7 @@ export default class ObjectPage extends React.Component {
             const objectData = res.data.data;
             console.log(objectData);
 
-            if (objectData.additionalComfortProps) {
+            if( objectData.additionalComfortProps ) {
                 this.products = [];
                 objectData.additionalComfortProps.forEach(data => {
                     this.products.push(data);
@@ -88,7 +90,8 @@ export default class ObjectPage extends React.Component {
                 name: objectData.title,
                 desc: objectData.description,
                 price: objectData.price,
-                route: `${objectData.objectType.typeName}: ${objectData.country.name}, ${objectData.localityType.name} ${objectData.locality.name}, ${objectData.street.name} ${objectData.houseNumber}`
+                route: `${objectData.objectType.typeName}: ${objectData.country.name}, ${objectData.localityType.name} ${objectData.locality.name}, ${objectData.street.name} ${objectData.houseNumber}`,
+                rating: objectData.rating
             });
         }).catch(err => {
             console.log(err);
@@ -201,6 +204,10 @@ export default class ObjectPage extends React.Component {
                         <h2 style = {{marginLeft: '-0.5em'}}>
                             {this.state.name}
                         </h2>
+                        <Rating
+                            style = {{marginLeft: '-0.5em', marginBottom: '0.5em'}} name = 'size-small'
+                            value = {this.state.rating} max = {10} size = 'large' readOnly
+                        />
                         <p style = {{marginLeft: '-0.8em'}}>{this.state.route}</p>
                         <h2 style = {{marginLeft: '-0.5em'}}>
                             Стоимость: {this.state.price} руб/день
@@ -244,7 +251,9 @@ export default class ObjectPage extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        {this.comfortProps.length === 0 ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Владелец не указал условия</ListGroup.Item> : this.comfortProps}
+                        {this.comfortProps.length === 0 ? <ListGroup.Item
+                            style = {{marginLeft: '-0.8em'}}
+                        >Владелец не указал условия</ListGroup.Item> : this.comfortProps}
                     </ListGroup>
                 </Container>
 
@@ -301,14 +310,17 @@ export default class ObjectPage extends React.Component {
                         </Col>
                     </Row>
 
-                    <Row className = 'justify-content-md-center' style = {{marginBottom: '2em'}}>
-                        <BootstrapTable
-                            keyField = 'id'
-                            columns = {this.columns}
-                            selectRow = {this.selectRow}
-                            data = {this.products}
-                        />
-                    </Row>
+                    {this.products.length === 0
+                        ? <div />
+                        : <Row className = 'justify-content-md-center' style = {{marginBottom: '2em'}}>
+                                <BootstrapTable
+                                    keyField = 'id'
+                                    columns = {this.columns}
+                                    selectRow = {this.selectRow}
+                                    data = {this.products}
+                                />
+                            </Row>
+                    }
 
                     <Row className = 'justify-content-md-center'>
                         <Button
@@ -350,7 +362,12 @@ export default class ObjectPage extends React.Component {
                                 <Col>
                                     <h4>User name</h4>
                                     <p className = 'objInnerText'>Дата создания: 10-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка: 8 из 10</p>
+                                    <p className = 'objInnerText'>Оценка:
+                                        <Rating
+                                            style = {{marginLeft: '0.5em'}} name = 'size-small'
+                                            value = {7} max = {10} size = 'small' readOnly
+                                        />
+                                    </p>
                                     <p className = 'objInnerText'>Напимер, говорит он тебе: Бикарпуль! Бикарпуль! А потом, когда уже поздно, выясняется что это было "Be careful!"</p>
                                 </Col>
 
