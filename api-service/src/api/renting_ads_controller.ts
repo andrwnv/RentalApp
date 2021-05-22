@@ -10,7 +10,7 @@ class RentingAdsController {
             const count = req.query.count as string;
             const padding = (req.query.padding || 0) as string;
 
-            if (!count) {
+            if ( !count ) {
                 const rentedObjects = await Connection.models.object.findAll({
                     order: [
                         ['id', 'DESC'],
@@ -141,6 +141,63 @@ class RentingAdsController {
                         houseNumber: req.body.houseNumber
                     }
                 }
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async show(req: express.Request, res: express.Response) {
+        try {
+            const objectId = req.params.id;
+
+            const rentedObject = await Connection.models.object.findOne({
+                where: {
+                    id: objectId
+                },
+                include: [
+                    {
+                        model: Connection.models.objectType,
+                        required: true,
+                        attributes: ['typeName']
+                    },
+                    {
+                        model: Connection.models.street,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.country,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.locality,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.localityType,
+                        required: true,
+                        attributes: ['name']
+                    },
+                    {
+                        model: Connection.models.clients,
+                        required: true,
+                        attributes: ['firstName', 'lastName', 'rating', 'photoLink', 'id']
+                    },
+                ],
+                attributes: {
+                    exclude: ['FK_landLord', 'FK_country', 'FK_locality', 'FK_localityType', 'FK_street', 'FK_objectType'],
+                },
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: rentedObject
             });
         } catch(err) {
             res.status(500).json({

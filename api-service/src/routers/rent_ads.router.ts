@@ -22,5 +22,6 @@ rentAdsRouter.patch('/', passport.authenticate('jwt', { session: false }), Renti
 rentAdsRouter.get('/user_ads', passport.authenticate('jwt', { session: false }), NewRentAdValidate, RentingAdsCtrl.userAds);
 rentAdsRouter.post('/upload_photos', passport.authenticate('jwt', { session: false }),
     upload.array('adImages', 10), UploadFileCtrl.uploadAdPhotos);
+rentAdsRouter.get('/:id',  passport.authenticate('jwt', { session: false }), RentingAdsCtrl.show);
 
 export default rentAdsRouter;
