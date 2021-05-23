@@ -130,7 +130,13 @@ class UploadFilesController {
 
     async generatePDFLease(req: express.Request, res: express.Response): Promise<void> {
         try {
-            if ( req.user == undefined ) {
+            const client = await Connection.models.clients.findOne({
+                where: {
+                    id: req.query.client_id
+                }
+            });
+
+            if ( client == undefined ) {
                 res.status(404).json({
                     status: 'Error',
                     data: 'Cant find client data'
@@ -195,8 +201,17 @@ class UploadFilesController {
                 return;
             }
 
+            const user: Client = {
+                id: client.get('id') as number,
+                firstName: client.get('firstName') as string,
+                lastName: client.get('lastName') as string,
+                phoneNumber: client.get('phoneNumber') as string,
+                eMail: client.get('eMail') as string,
+                photoLink: client.get('photoLink') as string,
+                rating: client.get('rating') as number,
+            } as Client;
 
-            const file = createLease(req.user, landData, `lease_${landData.get('id')}_${landData.get('FK_landLord')}`);
+            const file = createLease(user, landData, `lease_${landData.get('id')}_${landData.get('FK_landLord')}`);
             setTimeout(() => {
                 let _file = fs.createReadStream(file);
 

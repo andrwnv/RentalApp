@@ -32,7 +32,7 @@ class BookingController {
                     {
                         model: Connection.models.clients,
                         required: true,
-                        attributes: ['firstName', 'lastName']
+                        attributes: ['firstName', 'lastName', 'id']
                     },
                 ]
             });

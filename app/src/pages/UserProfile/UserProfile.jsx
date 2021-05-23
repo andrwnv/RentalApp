@@ -30,7 +30,7 @@ export default class UserProfile extends React.Component {
             reservations: [],
             waitingBookingConfirm: [],
             confirmedBooking: [],
-            needUpdate: false
+            userID: 0
         }
 
         this.history = props.history;
@@ -55,7 +55,8 @@ export default class UserProfile extends React.Component {
                 userProfilePic: res.data.data.photoLink,
                 firstName: res.data.data.firstName,
                 lastName: res.data.data.lastName,
-                userRating: res.data.data.rating
+                userRating: res.data.data.rating,
+                userID: res.data.data.id
             });
         });
 
@@ -102,7 +103,7 @@ export default class UserProfile extends React.Component {
                                         </Button>
                                         <Button
                                             variant = 'dark' style = {{marginTop: '5px'}} onClick = {() => {
-                                            this.downloadLease(booking_res.object.id)
+                                                this.downloadLease(booking_res.object.id, booking_res.client.id);
                                         }}
                                         >
                                             Скачать договор
@@ -250,7 +251,7 @@ export default class UserProfile extends React.Component {
                                 <NavLink eventKey = {3.1} href = {`/ad/${reservation.object.id}`}>Объявление</NavLink>
                                 <NavLink
                                     eventKey = {3.2} onSelect = {() => {
-                                    this.downloadLease(reservation.object.id)
+                                        this.downloadLease(reservation.object.id, this.state.userID);
                                 }}
                                 >Скачать договор</NavLink>
                             </NavDropdown>
@@ -271,7 +272,7 @@ export default class UserProfile extends React.Component {
         this.setState({showDeleteModal: false});
     }
 
-    downloadLease = (landId) => {
+    downloadLease = (landId, clientID) => {
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/pdf',
@@ -279,7 +280,7 @@ export default class UserProfile extends React.Component {
             token: `${token}`
         };
 
-        const data = {land_id: landId};
+        const data = {land_id: landId, client_id: clientID};
 
         api.request({
             url: 'http://localhost:3080/client/create_lease',
