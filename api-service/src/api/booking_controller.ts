@@ -22,8 +22,19 @@ class BookingController {
         try {
             const reservation = await Connection.models.bookedObject.findOne({
                 where: {
-                    id: req.params.id
-                }
+                    FK_object: req.params.id
+                },
+                include: [
+                    {
+                        model: Connection.models.object,
+                        required: true,
+                    },
+                    {
+                        model: Connection.models.clients,
+                        required: true,
+                        attributes: ['firstName', 'lastName']
+                    },
+                ]
             });
 
             res.status(200).json({
@@ -54,7 +65,10 @@ class BookingController {
             const reservations = await Connection.models.bookedObject.findAll({
                 where: {
                     FK_client: client.id
-                }
+                },
+                include: [{
+                        model: Connection.models.object,
+                }]
             });
 
             res.status(200).json({

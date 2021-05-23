@@ -26,18 +26,29 @@ export default class UserProfile extends React.Component {
             firstName: '',
             lastName: '',
             userRating: 0,
-            userObjects: []
+            userObjects: [],
+            reservations: [],
+            waitingBookingConfirm: [],
+            confirmedBooking: [],
+            needUpdate: false
         }
 
         this.history = props.history;
         this.newUserPic = null;
+    }
 
+    getDataFromAPI = () => {
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
             token: `${token}`
         };
+
+        this.state.userObjects = [];
+        this.state.reservations = [];
+        this.state.confirmedBooking = [];
+        this.state.waitingBookingConfirm = [];
 
         api.get('http://localhost:3080/client/current_user', {headers}).then(res => {
             this.setState({
@@ -49,22 +60,186 @@ export default class UserProfile extends React.Component {
         });
 
         api.get('http://localhost:3080/rent_ads/user_ads', {headers}).then(res => {
-            let objects = [];
+            res.data.data.forEach(async object => {
+                const booking_res = (await api.get(`http://localhost:3080/booking/${object.id}`, {headers})).data.data;
 
-            res.data.data.forEach(object => {
-                objects.push(
+                if( booking_res != null ) {
+                    if( booking_res.confirmed ) {
+                        this.setState({
+                            confirmedBooking: this.state.confirmedBooking.concat([
+                                <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                <Row>
+                                    <img
+                                        className = 'objPic'
+                                        src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                            : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                        alt = 'object pic'
+                                    />
+                                    <Col>
+                                        <h4>{object.title}</h4>
+                                        <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
+                                        <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
+                                    </Col>
+
+                                    <div className = 'buttonsGroup'>
+                                        <Button
+                                            variant = 'danger' style = {{marginTop: '5px'}} onClick = {() => {
+                                            const token = Cookies.get('token');
+                                            const headers = {
+                                                'Content-Type': 'application/json',
+                                                Accept: 'application/json',
+                                                token: `${token}`
+                                            };
+
+                                            const data = {bookingId: booking_res.id};
+
+                                            api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
+                                                this.getDataFromAPI();
+                                            });
+                                        }}
+                                        >
+                                            Отменить
+                                        </Button>
+                                        <Button
+                                            variant = 'dark' style = {{marginTop: '5px'}} onClick = {() => {
+                                            this.downloadLease(booking_res.object.id)
+                                        }}
+                                        >
+                                            Скачать договор
+                                        </Button>
+                                    </div>
+                                </Row>
+                            </ListGroup.Item>
+                            ])
+                        });
+                    } else {
+                        this.setState({
+                            waitingBookingConfirm: this.state.waitingBookingConfirm.concat([
+                                <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                <Row>
+                                    <img
+                                        className = 'objPic'
+                                        src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                            : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                        alt = 'object pic'
+                                    />
+                                    <Col>
+                                        <h4>{object.title}</h4>
+                                        <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
+                                        <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
+                                    </Col>
+
+                                    <div className = 'buttonsGroup'>
+                                        <Button
+                                            style = {{marginBottom: '5px'}}
+                                            onClick = {() => {
+                                                const token = Cookies.get('token');
+                                                const headers = {
+                                                    'Content-Type': 'application/json',
+                                                    Accept: 'application/json',
+                                                    token: `${token}`
+                                                };
+
+                                                const data = {bookingId: booking_res.id};
+
+                                                api.patch('http://localhost:3080/booking/confirm', data, {headers}).then(() => {
+                                                    this.getDataFromAPI();
+                                                });
+                                            }}
+                                        >
+                                            Подтвердить
+                                        </Button>
+
+                                        <Button
+                                            variant = 'danger' style = {{marginTop: '5px'}} onClick = {() => {
+                                            const token = Cookies.get('token');
+                                            const headers = {
+                                                'Content-Type': 'application/json',
+                                                Accept: 'application/json',
+                                                token: `${token}`
+                                            };
+
+                                            const data = {bookingId: booking_res.id};
+
+                                            api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
+                                                this.getDataFromAPI();
+                                            });
+                                        }}
+                                        >
+                                            Отменить
+                                        </Button>
+                                    </div>
+                                </Row>
+                            </ListGroup.Item>
+                            ])
+                        });
+                    }
+                }
+
+                this.setState({
+                    userObjects: this.state.userObjects.concat(
+                        [
+                            <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                <Row>
+                                    <img
+                                        className = 'objPic'
+                                        src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                            : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                        alt = 'object pic'
+                                    />
+                                    <Col>
+                                        <h4>{object.title}</h4>
+                                        <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
+                                        <Rating name = 'size-small' value = {object.rating} max = {10} readOnly />
+                                    </Col>
+
+                                    <NavDropdown
+                                        title = {<div style = {{display: 'inline-block'}}> <Icon
+                                            icon = {threeDotsVertical}
+                                        /> </div>} id = 'basic-nav-dropdown'
+                                    >
+                                        <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
+                                        <NavLink
+                                            eventKey = {3.2} onSelect = {() => {
+                                            const data = {objectId: object.id};
+                                            api.delete('http://localhost:3080/rent_ads/', {headers, data})
+                                                .catch(err => {
+                                                    console.log(err);
+                                                });
+                                        }}
+                                        >
+                                            Удалить
+                                        </NavLink>
+                                    </NavDropdown>
+                                </Row>
+                            </ListGroup.Item>
+                        ]
+                    )
+                });
+            });
+        });
+
+        api.get('http://localhost:3080/booking', {headers}).then(res => {
+            let reservations = [];
+
+            res.data.data.forEach(reservation => {
+                reservations.push(
                     <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
                         <Row>
                             <img
                                 className = 'objPic'
-                                src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
-                                                                           : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                src = {reservation.object.mediaLinks.urls.length !== 0
+                                    ? reservation.object.mediaLinks.urls[0]
+                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
                                 alt = 'object pic'
                             />
                             <Col>
-                                <h4>{object.title}</h4>
-                                <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
-                                <Rating name="size-small" value={object.rating} max={10} readOnly />
+                                <h4>{reservation.object.title}</h4>
+                                <p className = 'objInnerText'>Дата брони: {reservation.beginDate} по {reservation.endDate}</p>
+                                <p className = 'objInnerText'>Оценка объекта: <Rating
+                                    name = 'size-small' value = {reservation.object.rating} max = {10} readOnly
+                                /></p>
+                                <p className = 'objInnerText'>{reservation.confirmed ? 'Бронь подтверждена' : 'Бронь не подтверждена'}</p>
                             </Col>
 
                             <NavDropdown
@@ -72,31 +247,31 @@ export default class UserProfile extends React.Component {
                                     icon = {threeDotsVertical}
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
-                                <NavLink eventKey = {3.1} href={`/ad/${object.id}`}>Объявление</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => {
-                                    const data = {objectId: object.id};
-                                    api.delete('http://localhost:3080/rent_ads/', {headers, data})
-                                        .catch(err => {
-                                            console.log(err);
-                                        });
-                                }}>
-                                    Удалить
-                                </NavLink>
+                                <NavLink eventKey = {3.1} href = {`/ad/${reservation.object.id}`}>Объявление</NavLink>
+                                <NavLink
+                                    eventKey = {3.2} onSelect = {() => {
+                                    this.downloadLease(reservation.object.id)
+                                }}
+                                >Скачать договор</NavLink>
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
                 );
             });
 
-            this.setState({userObjects: objects});
+            this.setState({reservations: reservations});
         });
+    };
+
+    componentDidMount() {
+        this.getDataFromAPI();
     }
 
     handleClose = () => {
         this.setState({showDeleteModal: false});
     }
 
-    downloadLease = () => {
+    downloadLease = (landId) => {
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/pdf',
@@ -104,7 +279,7 @@ export default class UserProfile extends React.Component {
             token: `${token}`
         };
 
-        const data = {land_id: 66};
+        const data = {land_id: landId};
 
         api.request({
             url: 'http://localhost:3080/client/create_lease',
@@ -230,7 +405,9 @@ export default class UserProfile extends React.Component {
                         <Col>
                             <h3>{this.state.firstName} {this.state.lastName}</h3>
                             <h4>Рейтинг:</h4>
-                            <Rating name="size-small" value={this.state.userRating} max={10} size="large" readOnly />
+                            <Rating
+                                name = 'size-small' value = {this.state.userRating} max = {10} size = 'large' readOnly
+                            />
                         </Col>
 
                         <Button style = {{width: '15%'}} variant = 'danger' onClick = {this.openDeleteModal}>
@@ -269,31 +446,10 @@ export default class UserProfile extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                            <Row>
-                                <img
-                                    className = 'objPic'
-                                    src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
-                                    alt = 'object pic'
-                                />
-                                <Col>
-                                    <h4>Object name</h4>
-                                    <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
-                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
-                                </Col>
+                        {this.state.reservations.length === 0
+                            ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                            : this.state.reservations}
 
-                                <NavDropdown
-                                    title = {<div style = {{display: 'inline-block'}}> <Icon
-                                        icon = {threeDotsVertical}
-                                    /> </div>} id = 'basic-nav-dropdown'
-                                >
-                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
-                                    <NavLink eventKey = {3.2} onSelect = {this.downloadLease}>Скачать договор</NavLink>
-                                </NavDropdown>
-                            </Row>
-                        </ListGroup.Item>
                     </ListGroup>
                 </Container>
 
@@ -318,8 +474,12 @@ export default class UserProfile extends React.Component {
                                 <Col>
                                     <h4>Object name</h4>
                                     <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
-                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating
+                                        name = 'size-small' value = {7} max = {10} readOnly
+                                    /></p>
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating
+                                        name = 'size-small' value = {8} max = {10} readOnly
+                                    /></p>
                                 </Col>
 
                                 <NavDropdown
@@ -342,8 +502,12 @@ export default class UserProfile extends React.Component {
                                 <Col>
                                     <h4>Object name</h4>
                                     <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating name="size-small" value={7} max={10} readOnly /></p>
-                                    <p className = 'objInnerText'>Ваша оценка: <Rating name="size-small" value={8} max={10} readOnly /></p>
+                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating
+                                        name = 'size-small' value = {7} max = {10} readOnly
+                                    /></p>
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating
+                                        name = 'size-small' value = {8} max = {10} readOnly
+                                    /></p>
                                 </Col>
 
                                 <NavDropdown
@@ -372,6 +536,50 @@ export default class UserProfile extends React.Component {
                         <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
                     </ListGroup>
                 </Container>
+                {this.state.userObjects.length === 0 ? <div> </div>
+                    :
+                    <div>
+                        <Container style = {{padding: 0}}>
+                            <h2
+                                style = {{
+                                    padding: 0,
+                                    marginLeft: '-0.5em'
+                                }}
+                            >
+                                Брони ожидающие подтеждения:
+                            </h2>
+
+                            <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
+                                {this.state.waitingBookingConfirm.length === 0
+                                    ? <ListGroup.Item
+                                        style = {{marginLeft: '-0.8em'}}
+                                    >Здесь пока что пусто</ListGroup.Item>
+                                    : this.state.waitingBookingConfirm
+                                }
+                            </ListGroup>
+                        </Container>
+
+                        <Container style = {{padding: 0}}>
+                            <h2
+                                style = {{
+                                    padding: 0,
+                                    marginLeft: '-0.5em'
+                                }}
+                            >
+                            Брони подтвержденные Вами:
+                            </h2>
+
+                            <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
+                                {this.state.confirmedBooking.length === 0
+                                    ? <ListGroup.Item
+                                        style = {{marginLeft: '-0.8em'}}
+                                    >Здесь пока что пусто</ListGroup.Item>
+                                    : this.state.confirmedBooking
+                                }
+                            </ListGroup>
+                        </Container>
+                    </div>
+                }
             </div>
         );
     }
