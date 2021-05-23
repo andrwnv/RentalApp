@@ -126,8 +126,28 @@ export default class ObjectPage extends React.Component {
         },
     };
 
-    bookObject() {
-        this.setState({showBookingModal: false});
+    bookObject = () => {
+        const header = {
+            headers: {
+                'token': Cookies.get('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        };
+
+        const data = {
+            beginDate: this.state.beginDate,
+            endDate: this.state.endDate,
+            objectId: this.objectId
+        };
+
+        api.post('http://localhost:3080/booking/', data, header).then(_ => {
+            this.setState({showBookingModal: false});
+            alert('Бронь создана!');
+        }).catch(_ => {
+            this.setState({showBookingModal: false});
+            alert('Упс, что-то пошло не так!');
+        });
     }
 
     handleClose = () => {
