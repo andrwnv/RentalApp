@@ -66,75 +66,38 @@ export default class UserProfile extends React.Component {
 
                 if( booking_results.length > 0 ) {
                     booking_results.forEach(booking_res => {
-                        if( booking_res.confirmed ) {
-                            this.setState({
-                                confirmedBooking: this.state.confirmedBooking.concat([
-                                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                                    <Row>
-                                        <img
-                                            className = 'objPic'
-                                            src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
-                                                : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
-                                            alt = 'object pic'
-                                        />
-                                        <Col>
-                                            <h4>{object.title}</h4>
-                                            <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
-                                            <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
-                                        </Col>
-
-                                        <div className = 'buttonsGroup'>
-                                            <Button
-                                                variant = 'danger' style = {{marginTop: '5px'}} onClick = {() => {
-                                                const token = Cookies.get('token');
-                                                const headers = {
-                                                    'Content-Type': 'application/json',
-                                                    Accept: 'application/json',
-                                                    token: `${token}`
-                                                };
-
-                                                const data = {bookingId: booking_res.id};
-
-                                                api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
-                                                    this.getDataFromAPI();
-                                                });
-                                            }}
-                                            >
-                                                Отменить
-                                            </Button>
-                                            <Button
-                                                variant = 'dark' style = {{marginTop: '5px'}} onClick = {() => {
-                                                    this.downloadLease(booking_res.object.id, booking_res.client.id);
-                                            }}
-                                            >
-                                                Скачать договор
-                                            </Button>
-                                        </div>
-                                    </Row>
-                                </ListGroup.Item>
-                                ])
+                        api.get(`http://localhost:3080/booking/additional_comfort?bookingId=${booking_res.id}&rentId=`, {headers}).then(res => {
+                            let additionals = [];
+                            res.data.data.forEach(additional => {
+                                additionals.push(
+                                    <li>{additional.nameOfComfort} (Стоимость: {additional.price} руб.)</li>
+                                );
                             });
-                        } else {
-                            this.setState({
-                                waitingBookingConfirm: this.state.waitingBookingConfirm.concat([
-                                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                                    <Row>
-                                        <img
-                                            className = 'objPic'
-                                            src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
-                                                : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
-                                            alt = 'object pic'
-                                        />
-                                        <Col>
-                                            <h4>{object.title}</h4>
-                                            <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
-                                            <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
-                                        </Col>
 
-                                        <div className = 'buttonsGroup'>
-                                            <Button
-                                                style = {{marginBottom: '5px'}}
-                                                onClick = {() => {
+                            if( booking_res.confirmed ) {
+                                this.setState({
+                                    confirmedBooking: this.state.confirmedBooking.concat([
+                                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                        <Row>
+                                            <img
+                                                className = 'objPic'
+                                                style={{ width: '9em', height: '9em' }}
+                                                src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                                alt = 'object pic'
+                                            />
+                                            <Col>
+                                                <h4>{object.title}</h4>
+                                                <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
+                                                <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
+                                                {
+                                                    additionals.length === 0 ? <></> : <ol style={{marginLeft: '1em'}}> {additionals} </ol>
+                                                }
+                                            </Col>
+
+                                            <div className = 'buttonsGroup'>
+                                                <Button
+                                                    variant = 'danger' style = {{marginBottom: '5px'}} onClick = {() => {
                                                     const token = Cookies.get('token');
                                                     const headers = {
                                                         'Content-Type': 'application/json',
@@ -144,38 +107,92 @@ export default class UserProfile extends React.Component {
 
                                                     const data = {bookingId: booking_res.id};
 
-                                                    api.patch('http://localhost:3080/booking/confirm', data, {headers}).then(() => {
+                                                    api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
                                                         this.getDataFromAPI();
                                                     });
                                                 }}
-                                            >
-                                                Подтвердить
-                                            </Button>
+                                                >
+                                                    Отменить
+                                                </Button>
+                                                <Button
+                                                    variant = 'dark' style = {{marginTop: '5px', marginBottom: '5px'}} onClick = {() => {
+                                                    this.downloadLease(booking_res.object.id, booking_res.client.id);
+                                                }}
+                                                >
+                                                    Скачать договор
+                                                </Button>
+                                                <Button variant = 'dark' style={{marginTop: '5px'}}> Заселен </Button>
+                                            </div>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    ])
+                                });
+                            } else {
+                                this.setState({
+                                    waitingBookingConfirm: this.state.waitingBookingConfirm.concat([
+                                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                        <Row>
+                                            <img
+                                                className = 'objPic'
+                                                src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                                alt = 'object pic'
+                                            />
+                                            <Col>
+                                                <h4>{object.title}</h4>
+                                                <p className = 'objInnerText'>Желаемые даты: c {booking_res.beginDate} по {booking_res.endDate}</p>
+                                                <p className = 'objInnerText'>Клиент: {booking_res.client.firstName} {booking_res.client.lastName}</p>
+                                                {
+                                                    additionals.length === 0 ? <></> : <ol style={{marginLeft: '1em'}}> {additionals} </ol>
+                                                }
+                                            </Col>
 
-                                            <Button
-                                                variant = 'danger' style = {{marginTop: '5px'}} onClick = {() => {
-                                                const token = Cookies.get('token');
-                                                const headers = {
-                                                    'Content-Type': 'application/json',
-                                                    Accept: 'application/json',
-                                                    token: `${token}`
-                                                };
+                                            <div className = 'buttonsGroup'>
+                                                <Button
+                                                    style = {{marginBottom: '5px'}}
+                                                    onClick = {() => {
+                                                        const token = Cookies.get('token');
+                                                        const headers = {
+                                                            'Content-Type': 'application/json',
+                                                            Accept: 'application/json',
+                                                            token: `${token}`
+                                                        };
 
-                                                const data = {bookingId: booking_res.id};
+                                                        const data = {bookingId: booking_res.id};
 
-                                                api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
-                                                    this.getDataFromAPI();
-                                                });
-                                            }}
-                                            >
-                                                Отменить
-                                            </Button>
-                                        </div>
-                                    </Row>
-                                </ListGroup.Item>
-                                ])
-                            });
-                        }
+                                                        api.patch('http://localhost:3080/booking/confirm', data, {headers}).then(() => {
+                                                            this.getDataFromAPI();
+                                                        });
+                                                    }}
+                                                >
+                                                    Подтвердить
+                                                </Button>
+
+                                                <Button
+                                                    variant = 'danger' style = {{marginTop: '5px'}} onClick = {() => {
+                                                    const token = Cookies.get('token');
+                                                    const headers = {
+                                                        'Content-Type': 'application/json',
+                                                        Accept: 'application/json',
+                                                        token: `${token}`
+                                                    };
+
+                                                    const data = {bookingId: booking_res.id};
+
+                                                    api.delete('http://localhost:3080/booking', {headers, data}).then(() => {
+                                                        this.getDataFromAPI();
+                                                    });
+                                                }}
+                                                >
+                                                    Отменить
+                                                </Button>
+                                            </div>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    ])
+                                });
+                            }
+                        }).catch(err => {console.error(err)});
                     });
                 }
 
