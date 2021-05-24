@@ -5,6 +5,7 @@ import clientsRouter from './routers/client.router';
 import rentAdsRouter from './routers/rent_ads.router';
 import utilityRouter from './routers/utility.router';
 import bookingRouter from './routers/booking.router';
+import rentRouter from './routers/rent.router';
 
 const routes = express.Router();
 
@@ -17,5 +18,6 @@ routes.use('/client', clientsRouter);
 routes.use('/classifiers', classifiersRouter);
 routes.use('/rent_ads', rentAdsRouter);
 routes.use('/booking', bookingRouter);
+routes.use('/rent', rentRouter);
 
 export default routes;

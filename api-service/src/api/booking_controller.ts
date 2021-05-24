@@ -259,17 +259,6 @@ class BookingController {
 
     async moveToHistory(req: express.Request, res: express.Response) {
         try {
-            // const landlord = req.user as Client;
-            //
-            // if (!landlord) {
-            //     res.status(400).json({
-            //         status: 'Error',
-            //         data: 'Cant find user data'
-            //     });
-            //
-            //     return;
-            // }
-
             const reservation = await Connection.models.bookedObject.findOne({
                 where: {
                     id: req.body.bookingId
