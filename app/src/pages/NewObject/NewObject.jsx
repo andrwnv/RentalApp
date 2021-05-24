@@ -103,12 +103,10 @@ export default function NewObject({history}) {
         };
 
         api.post('http://localhost:3080/rent_ads', data, {headers}).then(res => {
-            console.log(res);
             if( files ) {
                 let formData = new FormData();
 
                 Array.from(files).forEach(file => {
-                    console.log(file);
                     formData.append('adImages', file);
                 });
 
@@ -226,7 +224,6 @@ export default function NewObject({history}) {
             price: ''
         }]));
 
-        console.log(products);
         counter++;
     }
 

@@ -127,8 +127,6 @@ export default class PlannedTrip extends React.Component {
                                     token: `${token}`
                                 };
 
-                                console.log(headers);
-
                                 const data = {
                                     id: item.id
                                 }
@@ -185,7 +183,6 @@ export default class PlannedTrip extends React.Component {
                                 step = {5}
                                 max = {this.state.maxPriceValue}
                                 onChange = {(event, value) => {
-                                    console.log(value);
                                     this.setState({priceValue: value, maxPriceValue: value[1] + 1500});
                                 }}
                                 valueLabelDisplay = 'auto'

@@ -47,7 +47,6 @@ export default class ObjectPage extends React.Component {
 
         api.get(`http://localhost:3080/rent_ads/${this.objectId}`, this.header).then(res => {
             const objectData = res.data.data;
-            console.log(objectData);
 
             if( objectData.additionalComfortProps ) {
                 this.products = [];
