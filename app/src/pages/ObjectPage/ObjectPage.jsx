@@ -142,6 +142,25 @@ export default class ObjectPage extends React.Component {
         };
 
         api.post('http://localhost:3080/booking/', data, header).then(_ => {
+            if (this.products.length === 0) {
+                this.setState({showBookingModal: false});
+                alert('Бронь создана!');
+
+                return;
+            }
+
+            this.products.forEach(res => {
+                console.log(res);
+                const _data = {
+                    name: res.name,
+                    description: "",
+                    price: parseInt(res.price),
+                    bookingId: _.data.data.id
+                };
+
+                api.post('http://localhost:3080/booking/additional_comfort', _data, header).then();
+            });
+
             this.setState({showBookingModal: false});
             alert('Бронь создана!');
         }).catch(_ => {
