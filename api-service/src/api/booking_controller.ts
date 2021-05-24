@@ -256,6 +256,53 @@ class BookingController {
             });
         }
     }
+
+    async moveToHistory(req: express.Request, res: express.Response) {
+        try {
+            // const landlord = req.user as Client;
+            //
+            // if (!landlord) {
+            //     res.status(400).json({
+            //         status: 'Error',
+            //         data: 'Cant find user data'
+            //     });
+            //
+            //     return;
+            // }
+
+            const reservation = await Connection.models.bookedObject.findOne({
+                where: {
+                    id: req.body.bookingId
+                }
+            });
+
+            if (!reservation) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'Cant find reservation'
+                });
+
+                return;
+            }
+
+            const history = await Connection.models.userBookedHistory.create({
+                beginDate: reservation.get('beginDate'),
+                endDate: reservation.get('endDate'),
+                FK_object: reservation.get('FK_object'),
+                FK_client: reservation.get('FK_client')
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: history
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
 }
 
 export const BookingCtrl = new BookingController();

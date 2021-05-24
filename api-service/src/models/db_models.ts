@@ -172,7 +172,7 @@ const UserBookedHistory = Connection.define(TablesName.UserBookedHistory, {
     },
     rating: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 });
 
@@ -202,7 +202,7 @@ const UserRentalHistory = Connection.define(TablesName.UserRentalHistory, {
     },
     rating: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 });
 
