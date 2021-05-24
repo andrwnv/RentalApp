@@ -489,7 +489,7 @@ AdditionalComfort.belongsTo(BookedObject, {
 AdditionalComfort.belongsTo(RentedObject, {
     foreignKey: {
         name: 'FK_rentObject',
-        allowNull: false
+        allowNull: true
     }
 });
 
