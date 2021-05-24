@@ -121,7 +121,7 @@ export default class UserProfile extends React.Component {
                                                 >
                                                     Скачать договор
                                                 </Button>
-                                                <Button variant = 'dark' style={{marginTop: '5px'}}> Заселен </Button>
+                                                <Button variant = 'dark' style={{marginTop: '5px'}}> Заселён </Button>
                                             </div>
                                         </Row>
                                     </ListGroup.Item>
