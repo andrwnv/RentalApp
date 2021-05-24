@@ -79,7 +79,7 @@ class AdditionalComfortController {
 
     async index(req: express.Request, res: express.Response) {
         try {
-            if ( !req.body.bookingId && !req.body.rentId ) {
+            if ( !req.query.bookingId && !req.query.rentId ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'Bad request!'
@@ -88,10 +88,10 @@ class AdditionalComfortController {
                 return;
             }
 
-            if (req.body.bookingId) {
+            if (req.query.bookingId) {
                 const selectedComfort = await Connection.models.additionalComfort.findAll({
                     where: {
-                        FK_bookingObject: req.body.bookingId,
+                        FK_bookingObject: req.query.bookingId,
                     },
                 });
 
@@ -101,10 +101,10 @@ class AdditionalComfortController {
                 });
 
                 return;
-            } else if (req.body.rentId) {
+            } else if (req.params.rentId) {
                 const selectedComfort = await Connection.models.additionalComfort.findAll({
                     where: {
-                        FK_rentObject: req.body.rentId,
+                        FK_rentObject: req.query.rentId,
                     },
                 });
 
