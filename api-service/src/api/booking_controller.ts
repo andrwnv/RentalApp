@@ -20,7 +20,7 @@ const isNotLandlord = async (client: Client, objectId: number): Promise<boolean 
 class BookingController {
     async index(req: express.Request, res: express.Response) {
         try {
-            const reservation = await Connection.models.bookedObject.findOne({
+            const reservation = await Connection.models.bookedObject.findAll({
                 where: {
                     FK_object: req.params.id
                 },

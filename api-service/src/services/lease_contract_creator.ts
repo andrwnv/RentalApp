@@ -17,9 +17,7 @@ const createLease = (client: any, object: any, fileName: string): string => {
     const filepath = __dirname + `\\tmp_files\\${fileName}.pdf`;
     const fileContent = 'Rental APP lease';
 
-    console.log(filepath);
-
-    fs.writeFile(filepath, fileContent, (err) => {
+    fs.writeFile(filepath, fileContent, (_) => {
         console.log('The file was successfully saved!');
     });
 
