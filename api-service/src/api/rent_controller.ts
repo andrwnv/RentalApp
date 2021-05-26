@@ -22,8 +22,19 @@ class RentController {
         try {
             const rentData = await Connection.models.rentedObject.findOne({
                 where: {
-                    id: req.params.id
-                }
+                    FK_object: req.params.id
+                },
+                include: [
+                    {
+                        model: Connection.models.object,
+                        required: true,
+                    },
+                    {
+                        model: Connection.models.clients,
+                        required: true,
+                        attributes: ['firstName', 'lastName', 'id']
+                    },
+                ]
             });
 
             if ( !rentData ) {
@@ -182,10 +193,13 @@ class RentController {
                 });
             }
 
-            const rentData = await Connection.models.rentedObject.findAll({
+            const rentData = await Connection.models.userRentalHistory.findAll({
                 where: {
                     FK_client: client.id
-                }
+                },
+                include: [{
+                    model: Connection.models.object
+                }]
             });
 
             res.status(200).json({

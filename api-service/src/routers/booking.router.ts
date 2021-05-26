@@ -12,6 +12,7 @@ bookingRouter.patch('/additional_comfort', passport.authenticate('jwt', { sessio
 bookingRouter.patch('/confirm', passport.authenticate('jwt', { session: false }), BookingCtrl.confirm);
 bookingRouter.post('/move_to_history', passport.authenticate('jwt', { session: false }), BookingCtrl.moveToHistory);
 bookingRouter.get('/', passport.authenticate('jwt', { session: false }), BookingCtrl.userReservations);
+bookingRouter.get('/history', passport.authenticate('jwt', { session: false }), BookingCtrl.userHistory);
 bookingRouter.delete('/', passport.authenticate('jwt', { session: false }), BookingCtrl.delete);
 bookingRouter.post('/', passport.authenticate('jwt', { session: false }), BookingCtrl.create);
 bookingRouter.get('/:id', passport.authenticate('jwt', { session: false }), BookingCtrl.index);

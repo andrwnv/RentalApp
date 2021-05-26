@@ -3,14 +3,14 @@ import express from 'express';
 import Connection from '../models/db_models';
 import Client from '../models/types/client_type';
 
-const isNotLandlord = async (client: Client, objectId: number): Promise<boolean | undefined> => {
+const isNotLandlord = async(client: Client, objectId: number): Promise<boolean | undefined> => {
     const object = await Connection.models.object.findOne({
         where: {
             id: objectId
         }
     });
 
-    if (object === null) {
+    if ( object === null ) {
         return undefined;
     }
 
@@ -53,7 +53,7 @@ class BookingController {
         try {
             const client = req.user as Client;
 
-            if (client === null) {
+            if ( client === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'No user data!'
@@ -67,7 +67,7 @@ class BookingController {
                     FK_client: client.id
                 },
                 include: [{
-                        model: Connection.models.object,
+                    model: Connection.models.object,
                 }]
             });
 
@@ -87,7 +87,7 @@ class BookingController {
         try {
             const client = req.user as Client;
 
-            if (client === null) {
+            if ( client === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'No user data!'
@@ -97,8 +97,8 @@ class BookingController {
             }
 
             if ( new Date(req.body.beginDate) < new Date() ||
-                 new Date(req.body.endDate) <= new Date() ||
-                 new Date(req.body.endDate) <= new Date(req.body.beginDate)) {
+                new Date(req.body.endDate) <= new Date() ||
+                new Date(req.body.endDate) <= new Date(req.body.beginDate) ) {
 
                 res.status(400).json({
                     status: 'Error',
@@ -108,7 +108,7 @@ class BookingController {
                 return;
             }
 
-            if (! await isNotLandlord(client, req.body.objectId)) {
+            if ( !await isNotLandlord(client, req.body.objectId) ) {
                 res.status(403).json({
                     status: 'Error',
                     data: 'Landlord cant booking his object!'
@@ -143,7 +143,7 @@ class BookingController {
         try {
             const landLord = req.user as Client;
 
-            if (landLord === null) {
+            if ( landLord === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'No user data!'
@@ -158,7 +158,7 @@ class BookingController {
                 }
             });
 
-            if (reservation === null) {
+            if ( reservation === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'That reservation not found!'
@@ -174,7 +174,7 @@ class BookingController {
                 }
             });
 
-            if (isLandLordObject === null) {
+            if ( isLandLordObject === null ) {
                 res.status(403).json({
                     status: 'Error',
                     data: 'Only land lord can delete reservation!'
@@ -201,7 +201,7 @@ class BookingController {
         try {
             const landLord = req.user as Client;
 
-            if (landLord === null) {
+            if ( landLord === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'No user data!'
@@ -216,7 +216,7 @@ class BookingController {
                 }
             });
 
-            if (reservation === null) {
+            if ( reservation === null ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'That reservation not found!'
@@ -232,7 +232,7 @@ class BookingController {
                 }
             });
 
-            if (isLandLordObject === null) {
+            if ( isLandLordObject === null ) {
                 res.status(403).json({
                     status: 'Error',
                     data: 'Confirm by no land lord!'
@@ -242,7 +242,7 @@ class BookingController {
             }
 
             await reservation.update({
-               confirmed: true
+                confirmed: true
             });
 
             res.status(200).json({
@@ -265,7 +265,7 @@ class BookingController {
                 }
             });
 
-            if (!reservation) {
+            if ( !reservation ) {
                 res.status(400).json({
                     status: 'Error',
                     data: 'Cant find reservation'
@@ -284,6 +284,38 @@ class BookingController {
             res.status(200).json({
                 status: 'Success',
                 data: history
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async userHistory(req: express.Request, res: express.Response) {
+        try {
+            const client = req.user as Client;
+
+            if ( !client ) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'Cant find user data'
+                });
+            }
+
+            const bookingData = await Connection.models.userBookedHistory.findAll({
+                where: {
+                    FK_client: client.id
+                },
+                include: [{
+                    model: Connection.models.object
+                }]
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: bookingData
             });
         } catch(err) {
             res.status(500).json({
