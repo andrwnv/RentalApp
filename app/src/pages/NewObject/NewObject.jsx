@@ -20,6 +20,8 @@ export default function NewObject({history}) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [houseNumber, setHouseNumber] = useState('');
+    const [apartNumber, setApartNumber] = useState('');
+    const [blockNumber, setBlockNumber] = useState('');
     const [country, setCountries] = useState('');
     const [street, setStreets] = useState('');
     const [locality, setLocalities] = useState('');
@@ -113,7 +115,9 @@ export default function NewObject({history}) {
             houseNumber: houseNumber,
             objectType: houseType,
             comfortProps: comfortProps,
-            addComfortProps: addComfort.length === 0 ? null : addComfort
+            addComfortProps: addComfort.length === 0 ? null : addComfort,
+            apartNumber: apartNumber,
+            blockNumber: blockNumber
         }
 
         const token = Cookies.get('token');
@@ -369,8 +373,26 @@ export default function NewObject({history}) {
                             type = "text"
                             id = "houseNumber"
                             value = {houseNumber}
-                            placeholder = "Сумма, начисляемая за день..."
+                            placeholder = "Номер дома..."
                             onChange = {event => setHouseNumber(event.target.value)}
+                        />
+
+                        <label htmlFor = "houseNumber" className = 'select'>Номер квартиры</label>
+                        <input
+                            type = "text"
+                            id = "apartNumber"
+                            value = {apartNumber}
+                            placeholder = "Номер квартиры..."
+                            onChange = {event => setApartNumber(event.target.value)}
+                        />
+
+                        <label htmlFor = "houseNumber" className = 'select'>Номер корпуса</label>
+                        <input
+                            type = "text"
+                            id = "blockNumber"
+                            value = {blockNumber}
+                            placeholder = "Номер корпуса..."
+                            onChange = {event => setBlockNumber(event.target.value)}
                         />
 
                         <label htmlFor = "items">Удобства *</label>

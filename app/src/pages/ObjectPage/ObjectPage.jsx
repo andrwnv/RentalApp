@@ -89,7 +89,7 @@ export default class ObjectPage extends React.Component {
                 name: objectData.title,
                 desc: objectData.description,
                 price: objectData.price,
-                route: `${objectData.objectType.typeName}: ${objectData.country.name}, ${objectData.localityType.name} ${objectData.locality.name}, ${objectData.street.name} ${objectData.houseNumber}`,
+                route: `${objectData.objectType.typeName}: ${objectData.country.name}, ${objectData.localityType.name} ${objectData.locality.name}, ${objectData.street.name} ${objectData.houseNumber} ${objectData.apartmentNumber ? ' кв. ' + objectData.apartmentNumber : ''} ${objectData.buildingTowerNumber ? ' ст. ' + objectData.buildingTowerNumber : ''}`,
                 rating: objectData.rating
             });
         }).catch(err => {
