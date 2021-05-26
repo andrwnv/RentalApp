@@ -20,7 +20,7 @@ const calcTotalPrice = (beginDate: Date, endDate: Date, oneDayPrice: number, pro
 class RentController {
     async index(req: express.Request, res: express.Response) {
         try {
-            const rentData = await Connection.models.rentedObject.findOne({
+            const rentData = await Connection.models.rentedObject.findAll({
                 where: {
                     FK_object: req.params.id
                 },
@@ -36,15 +36,6 @@ class RentController {
                     },
                 ]
             });
-
-            if ( !rentData ) {
-                res.status(400).json({
-                    status: 'Error',
-                    data: 'Cant find rend data'
-                });
-
-                return;
-            }
 
             res.status(200).json({
                 status: 'Success',

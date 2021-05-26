@@ -101,7 +101,7 @@ class AdditionalComfortController {
                 });
 
                 return;
-            } else if (req.params.rentId) {
+            } else if (req.query.rentId) {
                 const selectedComfort = await Connection.models.additionalComfort.findAll({
                     where: {
                         FK_rentObject: req.query.rentId,

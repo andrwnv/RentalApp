@@ -52,10 +52,33 @@ export default class UserProfile extends React.Component {
             bookingId: userBookingData.id
         };
 
-        api.post('http://localhost:3080/rent', data, {headers}).then(_ => {
+        api.post('http://localhost:3080/rent', data, {headers}).then(res => {
+            const data = {bookingId: userBookingData.id, rentId: res.data.data.id};
+            console.log(res.data.data.id);
+            api.patch('http://localhost:3080/booking/additional_comfort', data, {headers}).then();
+
             api.post('http://localhost:3080/booking/move_to_history', data, {headers}).then(_ => {
                api.delete('http://localhost:3080/booking', {headers, data});
             });
+        });
+
+        this.getDataFromAPI();
+    }
+
+    userLeave = (userRentalData) => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = {
+            rentId: userRentalData.id
+        };
+
+        api.post('http://localhost:3080/rent/move_to_history', data, {headers}).then(_ => {
+            api.delete('http://localhost:3080/rent', {headers, data});
         });
 
         this.getDataFromAPI();
@@ -87,7 +110,6 @@ export default class UserProfile extends React.Component {
         api.get('http://localhost:3080/rent_ads/user_ads', {headers}).then(res => {
             res.data.data.forEach(async object => {
                 const booking_results = (await api.get(`http://localhost:3080/booking/${object.id}`, {headers})).data.data;
-
                 if( booking_results.length > 0 ) {
                     booking_results.forEach(booking_res => {
                         api.get(`http://localhost:3080/booking/additional_comfort?bookingId=${booking_res.id}&rentId=`, {headers}).then(res => {
@@ -220,10 +242,53 @@ export default class UserProfile extends React.Component {
                     });
                 }
 
-                this.setState({
-                    userObjects: this.state.userObjects.concat(
-                        [
-                            <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                const rent_results = (await api.get(`http://localhost:3080/rent/${object.id}`, {headers})).data.data;
+                if (rent_results.length > 0) {
+                    rent_results.forEach(rent_res => {
+                        api.get(`http://localhost:3080/booking/additional_comfort?rentId=${rent_res.id}`, {headers}).then(res => {
+                            let additionals = [];
+
+                            res.data.data.forEach(additional => {
+                                console.log(additional.nameOfComfort);
+                                additionals.push(
+                                    <li>{additional.nameOfComfort} (Стоимость: {additional.price} руб.)</li>
+                                );
+                            });
+
+                            this.setState({
+                                rentedNow: this.state.rentedNow.concat([
+                                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                        <Row>
+                                            <img
+                                                className = 'objPic'
+                                                style={{ width: '9em', height: '9em' }}
+                                                src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                                alt = 'object pic'
+                                            />
+                                            <Col>
+                                                <h4>{object.title}</h4>
+                                                <p className = 'objInnerText'>Даты: c {rent_res.beginDate} по {rent_res.endDate}</p>
+                                                <p className = 'objInnerText'>Клиент: {rent_res.client.firstName} {rent_res.client.lastName}</p>
+                                                {
+                                                    additionals.length === 0 ? <></> : <ol style={{marginLeft: '1em'}}> {additionals} </ol>
+                                                }
+                                            </Col>
+
+                                            <div className = 'buttonsGroup'>
+                                                <Button variant = 'dark' style={{marginTop: '5px'}} onClick={() => { this.userLeave(rent_res); }}> Выселен </Button>
+                                            </div>
+                                        </Row>
+                                    </ListGroup.Item>
+                                ])
+                            });
+                        });
+                    });
+
+                    this.setState({
+                        userObjects: this.state.userObjects.concat(
+                            [
+                                <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
                                 <Row>
                                     <img
                                         className = 'objPic'
@@ -257,9 +322,10 @@ export default class UserProfile extends React.Component {
                                     </NavDropdown>
                                 </Row>
                             </ListGroup.Item>
-                        ]
-                    )
-                });
+                            ]
+                        )
+                    });
+                }
             });
         });
 
