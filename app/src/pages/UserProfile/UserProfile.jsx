@@ -37,6 +37,27 @@ export default class UserProfile extends React.Component {
         this.newUserPic = null;
     }
 
+    userMoving = (userBookingData) => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = {
+            bookingId: userBookingData.id
+        };
+
+        api.post('http://localhost:3080/rent', data, {headers}).then(_ => {
+            api.post('http://localhost:3080/booking/move_to_history', data, {headers}).then(_ => {
+               api.delete('http://localhost:3080/booking', {headers, data});
+            });
+        });
+
+        this.getDataFromAPI();
+    }
+
     getDataFromAPI = () => {
         const token = Cookies.get('token');
         const headers = {
@@ -121,7 +142,7 @@ export default class UserProfile extends React.Component {
                                                 >
                                                     Скачать договор
                                                 </Button>
-                                                <Button variant = 'dark' style={{marginTop: '5px'}}> Заселён </Button>
+                                                <Button variant = 'dark' style={{marginTop: '5px'}} onClick={() => { this.userMoving(booking_res); }}> Заселён </Button>
                                             </div>
                                         </Row>
                                     </ListGroup.Item>
