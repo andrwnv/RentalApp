@@ -143,6 +143,10 @@ const ClientReview = Connection.define(TablesName.ClientReview, {
     review: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    isForLandLord: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 });
 
