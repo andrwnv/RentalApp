@@ -30,7 +30,10 @@ export default class UserProfile extends React.Component {
             reservations: [],
             waitingBookingConfirm: [],
             confirmedBooking: [],
-            userID: 0
+            userID: 0,
+            rentHistory: [],
+            bookingHistory: [],
+            rentedNow: []
         }
 
         this.history = props.history;
@@ -306,6 +309,9 @@ export default class UserProfile extends React.Component {
 
     componentDidMount() {
         this.getDataFromAPI();
+
+        this.loadBookingHistory();
+        this.loadRentHistory();
     }
 
     handleClose = () => {
@@ -377,6 +383,110 @@ export default class UserProfile extends React.Component {
         });
 
         this.setState({showPicChangeModal: false});
+    }
+
+    loadBookingHistory = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get('http://localhost:3080/booking/history', {headers}).then(res => {
+            if (res.data.data.length === 0) {
+                this.setState({ bookingHistory: [<ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>] });
+                return;
+            }
+
+            let history = [];
+            res.data.data.forEach(item => {
+                history.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                        <Row>
+                            <img
+                                className = 'objPic'
+                                src = {item.object.mediaLinks.urls.length !== 0 ? `${item.object.mediaLinks.urls[0]}`
+                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                alt = 'object pic'
+                            />
+                            <Col>
+                                <h4>{item.object.title}</h4>
+                                <p className = 'objInnerText'>Даты бронирования: {item.beginDate} по {item.endDate}</p>
+                                <p className = 'objInnerText'>Оценка арендодателя: <Rating
+                                    name = 'size-small' value = {7} max = {10} readOnly
+                                /></p>
+                                <p className = 'objInnerText'>Ваша оценка: <Rating
+                                    name = 'size-small' value = {8} max = {10} readOnly
+                                /></p>
+                            </Col>
+
+                            <NavDropdown
+                                title = {<div style = {{display: 'inline-block'}}> <Icon
+                                    icon = {threeDotsVertical}
+                                /> </div>} id = 'basic-nav-dropdown'
+                            >
+                                <NavLink eventKey = {3.1}>Объявление</NavLink>
+                            </NavDropdown>
+                        </Row>
+                    </ListGroup.Item>
+                );
+            });
+
+            this.setState({bookingHistory: history});
+        });
+    }
+
+    loadRentHistory = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get('http://localhost:3080/rent/history', {headers}).then(res => {
+            if (res.data.data.length === 0) {
+                this.setState({ rentHistory: [<ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>] });
+                return;
+            }
+
+            let history = [];
+            res.data.data.forEach(item => {
+                history.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                        <Row>
+                            <img
+                                className = 'objPic'
+                                src = {item.object.mediaLinks.urls.length !== 0 ? `${item.object.mediaLinks.urls[0]}`
+                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                alt = 'object pic'
+                            />
+                            <Col>
+                                <h4>{item.object.title}</h4>
+                                <p className = 'objInnerText'>Даты аренды: {item.beginDate} по {item.endDate}</p>
+                                <p className = 'objInnerText'>Оценка арендодателя: <Rating
+                                    name = 'size-small' value = {7} max = {10} readOnly
+                                /></p>
+                                <p className = 'objInnerText'>Ваша оценка: <Rating
+                                    name = 'size-small' value = {8} max = {10} readOnly
+                                /></p>
+                            </Col>
+
+                            <NavDropdown
+                                title = {<div style = {{display: 'inline-block'}}> <Icon
+                                    icon = {threeDotsVertical}
+                                /> </div>} id = 'basic-nav-dropdown'
+                            >
+                                <NavLink eventKey = {3.1}>Объявление</NavLink>
+                            </NavDropdown>
+                        </Row>
+                    </ListGroup.Item>
+                );
+            });
+
+            this.setState({rentHistory: history});
+        });
     }
 
     render() {
@@ -570,6 +680,36 @@ export default class UserProfile extends React.Component {
                             marginLeft: '-0.5em'
                         }}
                     >
+                         История бронирования:
+                    </h2>
+
+                    <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
+                        {this.state.bookingHistory}
+                    </ListGroup>
+                </Container>
+
+                <Container style = {{padding: 0}}>
+                    <h2
+                        style = {{
+                            padding: 0,
+                            marginLeft: '-0.5em'
+                        }}
+                    >
+                         История аренды:
+                    </h2>
+
+                    <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
+                        {this.state.rentHistory}
+                    </ListGroup>
+                </Container>
+
+                <Container style = {{padding: 0}}>
+                    <h2
+                        style = {{
+                            padding: 0,
+                            marginLeft: '-0.5em'
+                        }}
+                    >
                         Отзывы о вас:
                     </h2>
 
@@ -577,6 +717,7 @@ export default class UserProfile extends React.Component {
                         <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
                     </ListGroup>
                 </Container>
+
                 {this.state.userObjects.length === 0 ? <div> </div>
                     :
                     <div>
@@ -616,6 +757,31 @@ export default class UserProfile extends React.Component {
                                         style = {{marginLeft: '-0.8em'}}
                                     >Здесь пока что пусто</ListGroup.Item>
                                     : this.state.confirmedBooking
+                                }
+                            </ListGroup>
+                        </Container>
+                    </div>
+                }
+
+                {this.state.userObjects.length === 0 ? <div> </div>
+                    :
+                    <div>
+                        <Container style = {{padding: 0}}>
+                            <h2
+                                style = {{
+                                    padding: 0,
+                                    marginLeft: '-0.5em'
+                                }}
+                            >
+                                Сейчас арендуются:
+                            </h2>
+
+                            <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
+                                {this.state.rentedNow.length === 0
+                                    ? <ListGroup.Item
+                                        style = {{marginLeft: '-0.8em'}}
+                                    >Здесь пока что пусто</ListGroup.Item>
+                                    : this.state.rentedNow
                                 }
                             </ListGroup>
                         </Container>
