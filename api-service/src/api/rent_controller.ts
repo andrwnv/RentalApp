@@ -204,6 +204,32 @@ class RentController {
             });
         }
     }
+
+    async userRentNow(req: express.Request, res: express.Response) {
+        try {
+            const rentData = await Connection.models.rentedObject.findAll({
+                where: {
+                    FK_client: (req.user as Client).id
+                },
+                include: [
+                    {
+                        model: Connection.models.object,
+                        required: true,
+                    },
+                ]
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: rentData
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
 }
 
 export const RentCtrl = new RentController();

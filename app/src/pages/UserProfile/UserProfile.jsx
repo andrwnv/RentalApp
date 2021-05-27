@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavLink } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, NavDropdown, NavLink, Form } from 'react-bootstrap';
 
 import { Icon } from '@iconify/react';
 import Rating from '@material-ui/lab/Rating';
@@ -22,6 +22,7 @@ export default class UserProfile extends React.Component {
         this.state = {
             showDeleteModal: false,
             showPicChangeModal: false,
+            addRatingModal: false,
             userProfilePic: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
             firstName: '',
             lastName: '',
@@ -33,11 +34,17 @@ export default class UserProfile extends React.Component {
             userID: 0,
             rentHistory: [],
             bookingHistory: [],
-            rentedNow: []
+            rentedNow: [],
+            userRentNow: [],
+            selectedRatingReview: 0
         }
 
         this.history = props.history;
         this.newUserPic = null;
+    }
+
+    sendRating = () => {
+        this.setState({addRatingModal: false});
     }
 
     userMoving = (userBookingData) => {
@@ -276,6 +283,13 @@ export default class UserProfile extends React.Component {
                                             </Col>
 
                                             <div className = 'buttonsGroup'>
+                                                <NavDropdown
+                                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                                        icon = {threeDotsVertical}
+                                                    /> </div>} id = 'basic-nav-dropdown' style={{left: '85%'}}>
+                                                    <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
+                                                    <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }} >Добавить отзыв</NavLink>
+                                                </NavDropdown>
                                                 <Button variant = 'dark' style={{marginTop: '5px'}} onClick={() => { this.userLeave(rent_res); }}> Выселен </Button>
                                             </div>
                                         </Row>
@@ -378,6 +392,7 @@ export default class UserProfile extends React.Component {
 
         this.loadBookingHistory();
         this.loadRentHistory();
+        this.loadRentNow();
     }
 
     handleClose = () => {
@@ -492,7 +507,8 @@ export default class UserProfile extends React.Component {
                                     icon = {threeDotsVertical}
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
-                                <NavLink eventKey = {3.1}>Объявление</NavLink>
+                                <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }}  >Добавить отзыв</NavLink>
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -544,7 +560,8 @@ export default class UserProfile extends React.Component {
                                     icon = {threeDotsVertical}
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
-                                <NavLink eventKey = {3.1}>Объявление</NavLink>
+                                <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }}>Добавить отзыв</NavLink>
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -552,6 +569,52 @@ export default class UserProfile extends React.Component {
             });
 
             this.setState({rentHistory: history});
+        });
+    }
+
+    loadRentNow = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get('http://localhost:3080/rent/now', {headers}).then(res => {
+            if (res.data.data.length === 0) {
+                this.setState({ rentHistory: [<ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>] });
+                return;
+            }
+
+            let history = [];
+            res.data.data.forEach(item => {
+                history.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                        <Row>
+                            <img
+                                className = 'objPic'
+                                src = {item.object.mediaLinks.urls.length !== 0 ? `${item.object.mediaLinks.urls[0]}`
+                                    : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                alt = 'object pic'
+                            />
+                            <Col>
+                                <h4>{item.object.title}</h4>
+                                <p className = 'objInnerText'>Даты аренды: {item.beginDate} по {item.endDate}</p>
+                            </Col>
+
+                            <NavDropdown
+                                title = {<div style = {{display: 'inline-block'}}> <Icon
+                                    icon = {threeDotsVertical}
+                                /> </div>} id = 'basic-nav-dropdown'
+                            >
+                                <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
+                            </NavDropdown>
+                        </Row>
+                    </ListGroup.Item>
+                );
+            });
+
+            this.setState({userRentNow: history});
         });
     }
 
@@ -594,6 +657,30 @@ export default class UserProfile extends React.Component {
                             Обновить
                         </Button>
                     </Modal.Body>
+                </Modal>
+
+                <Modal show = {this.state.addRatingModal} onHide = { () => {this.setState({addRatingModal: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Добавление отзыва</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
+                    <Modal.Body>
+                        <Form.Label>Оценка</Form.Label>
+                        <Rating
+                            name = 'size-small' value = {this.state.selectedRatingReview} max = {10} size = 'large'
+                            onChange={(_, newValue) => {
+                                this.setState({selectedRatingReview: newValue});
+                            }}
+                        />
+                        <br/>
+                        <Form.Label>Отзыв</Form.Label>
+                        <Form.Control as="textarea" rows={3} cols={5} />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendRating }>
+                            Отправить
+                        </Button>
+                    </Modal.Footer>
                 </Modal>
 
                 <Header />
@@ -681,61 +768,7 @@ export default class UserProfile extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                            <Row>
-                                <img
-                                    className = 'objPic'
-                                    src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
-                                    alt = 'object pic'
-                                />
-                                <Col>
-                                    <h4>Object name</h4>
-                                    <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating
-                                        name = 'size-small' value = {7} max = {10} readOnly
-                                    /></p>
-                                    <p className = 'objInnerText'>Ваша оценка: <Rating
-                                        name = 'size-small' value = {8} max = {10} readOnly
-                                    /></p>
-                                </Col>
-
-                                <NavDropdown
-                                    title = {<div style = {{display: 'inline-block'}}> <Icon
-                                        icon = {threeDotsVertical}
-                                    /> </div>} id = 'basic-nav-dropdown'
-                                >
-                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
-                                </NavDropdown>
-                            </Row>
-                        </ListGroup.Item>
-
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                            <Row>
-                                <img
-                                    className = 'objPic'
-                                    src = 'http://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
-                                    alt = 'object pic'
-                                />
-                                <Col>
-                                    <h4>Object name</h4>
-                                    <p className = 'objInnerText'>Дата аренды: 10-01-2020 по 15-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка арендодателя: <Rating
-                                        name = 'size-small' value = {7} max = {10} readOnly
-                                    /></p>
-                                    <p className = 'objInnerText'>Ваша оценка: <Rating
-                                        name = 'size-small' value = {8} max = {10} readOnly
-                                    /></p>
-                                </Col>
-
-                                <NavDropdown
-                                    title = {<div style = {{display: 'inline-block'}}> <Icon
-                                        icon = {threeDotsVertical}
-                                    /> </div>} id = 'basic-nav-dropdown'
-                                >
-                                    <NavLink eventKey = {3.1}>Объявление</NavLink>
-                                </NavDropdown>
-                            </Row>
-                        </ListGroup.Item>
+                        {this.state.userRentNow}
                     </ListGroup>
                 </Container>
 
@@ -839,7 +872,7 @@ export default class UserProfile extends React.Component {
                                     marginLeft: '-0.5em'
                                 }}
                             >
-                                Сейчас арендуются:
+                                Арендованы сейчас:
                             </h2>
 
                             <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
