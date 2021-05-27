@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Col, Row, ListGroup, Modal, Carousel, Form } from 'react-bootstrap';
+import { Container, Button, Col, Row, ListGroup, Modal, Carousel, Form, NavLink, NavDropdown } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import { Icon } from '@iconify/react';
 
@@ -9,6 +9,7 @@ import Cookies from '../../services/cookies';
 import threeDotsVertical from '@iconify-icons/bi/three-dots-vertical';
 import Header from '../../components/Header/Header';
 import Rating from '@material-ui/lab/Rating';
+import Select from 'react-select';
 
 
 export default class ObjectPage extends React.Component {
@@ -28,7 +29,10 @@ export default class ObjectPage extends React.Component {
             desc: '',
             price: 150,
             route: '',
-            rating: 0
+            rating: 0,
+            reportModal: false,
+            reasons: [],
+            selectedReason: null
         }
 
         this.history = props.history;
@@ -187,6 +191,38 @@ export default class ObjectPage extends React.Component {
         return totalSum * dayCount;
     }
 
+    componentDidMount() {
+        this.loadReasons();
+    }
+
+    sendReport = () => {
+        this.setState({reportModal: false});
+    }
+
+    loadReasons = () => {
+        const header = {
+            headers: {
+                'token': Cookies.get('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        };
+
+        api.get('http://localhost:3080/report/reasons', header).then(res => {
+            console.log(res);
+
+            const data = [];
+            res.data.data.forEach(reason => {
+                data.push({
+                    label: reason.name,
+                    value: reason.description
+                });
+            });
+
+            this.setState({reasons: data});
+        });
+    }
+
     render() {
         return (
             <div>
@@ -219,7 +255,7 @@ export default class ObjectPage extends React.Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Бронирование объекта</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Все поля дат должны быть заполнены верно!</Modal.Body>
+                    <Modal.Body>Все поля дат должны быть заполнены не верно!</Modal.Body>
                     <Modal.Footer>
                         <Button
                             variant = 'secondary' onClick = {() => {
@@ -227,6 +263,28 @@ export default class ObjectPage extends React.Component {
                         }}
                         >
                             Хорошо
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show = {this.state.reportModal} onHide = { () => {this.setState({reportModal: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Жалоба</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Выберите причину</Modal.Body>
+                    <Modal.Body>
+                        <Select
+                            options = {this.state.reasons}
+                            id = 'localityType'
+                            placeholder = {'Выберите причину...'}
+                            onChange = {event => {
+                                this.setState({selectedReason: event});
+                            }}
+                        />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendReport }>
+                            Пожаловаться
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -409,9 +467,13 @@ export default class ObjectPage extends React.Component {
                                     <p className = 'objInnerText'>Напимер, говорит он тебе: Бикарпуль! Бикарпуль! А потом, когда уже поздно, выясняется что это было "Be careful!"</p>
                                 </Col>
 
-                                <button className = 'threeDotButton'>
-                                    <Icon icon = {threeDotsVertical} />
-                                </button>
+                                <NavDropdown
+                                        title = {<div style = {{display: 'inline-block'}}> <Icon
+                                            icon = {threeDotsVertical}
+                                        /> </div>} id = 'basic-nav-dropdown'
+                                    >
+                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true}) }}>Пожаловаться</NavLink>
+                                </NavDropdown>
                             </Row>
                         </ListGroup.Item>
                     </ListGroup>
