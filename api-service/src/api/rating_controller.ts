@@ -133,6 +133,55 @@ class RatingController {
             });
         }
     }
+
+    async objectReview(req: express.Request, res: express.Response) {
+        try {
+
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async clientReview(req: express.Request, res: express.Response) {
+        try {
+            let reviews = await Connection.models.clientReview.findAll({
+                where: {
+                    FK_client: req.query.client,
+                    isForLandLord: req.query.isForLord
+                },
+                include: [{
+                    model: Connection.models.clients,
+                    attributes: ['firstName', 'lastName', 'photoLink']
+                }]
+            });
+
+            let reviews2 = await Connection.models.clientReview.findAll({
+                where: {
+                    FK_landLord: req.query.client,
+                    isForLandLord: true
+                },
+                include: [{
+                    model: Connection.models.clients,
+                    attributes: ['firstName', 'lastName', 'photoLink']
+                }]
+            });
+
+            const _res = reviews.concat(...reviews2);
+
+            res.status(200).json({
+                status: 'Success',
+                data: _res
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
 }
 
 export const RatingCtrl = new RatingController();

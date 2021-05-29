@@ -11,6 +11,7 @@ import './UserProfile.css';
 import Cookies from '../../services/cookies';
 import api from '../../services/api';
 import cookies from '../../services/cookies';
+import Select from 'react-select';
 
 const FileSaver = require('file-saver');
 
@@ -36,11 +37,17 @@ export default class UserProfile extends React.Component {
             bookingHistory: [],
             rentedNow: [],
             userRentNow: [],
-            selectedRatingReview: 0
+            selectedRatingReview: 0,
+            reviews: [],
+            reportModal: false
         }
 
         this.history = props.history;
         this.newUserPic = null;
+    }
+
+    sendReport = () => {
+        this.setState({reportModal: false});
     }
 
     sendRating = () => {
@@ -112,6 +119,8 @@ export default class UserProfile extends React.Component {
                 userRating: res.data.data.rating,
                 userID: res.data.data.id
             });
+
+            this.loadReviews();
         });
 
         api.get('http://localhost:3080/rent_ads/user_ads', {headers}).then(res => {
@@ -618,6 +627,59 @@ export default class UserProfile extends React.Component {
         });
     }
 
+    loadReviews = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get(`http://localhost:3080/rating/client_review?client=${this.state.userID}&isForLord=false`, {headers}).then(res => {
+            let data = [];
+
+            res.data.data.forEach(review => {
+                const date = new Date(review.createdAt);
+                let dd = String(date.getDate()).padStart(2, '0');
+                let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                let yyyy = date.getFullYear();
+
+                data.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                            <Row>
+                                <img
+                                    className = 'objPic'
+                                    src = {review.client.photoLink}
+                                    alt = 'object pic'
+                                />
+                                <Col>
+                                    <h4>{review.client.firstName} {review.client.lastName}</h4>
+                                    <p className = 'objInnerText'>Дата создания: {yyyy}-{mm}-{dd}</p>
+                                    <p className = 'objInnerText'>Оценка:
+                                        <Rating
+                                            style = {{marginLeft: '0.5em'}} name = 'size-small'
+                                            value = {review.rating} max = {10} size = 'small' readOnly
+                                        />
+                                    </p>
+                                    <p className = 'objInnerText'>{review.review}</p>
+                                </Col>
+
+                                <NavDropdown
+                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                        icon = {threeDotsVertical}
+                                    /> </div>} id = 'basic-nav-dropdown'
+                                >
+                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true}) }}>Пожаловаться</NavLink>
+                                </NavDropdown>
+                            </Row>
+                        </ListGroup.Item>
+                );
+            });
+
+            this.setState({reviews: data});
+        });
+    }
+
     render() {
         return (
             <div>
@@ -679,6 +741,28 @@ export default class UserProfile extends React.Component {
                     <Modal.Footer>
                         <Button variant = 'secondary' onClick = { this.sendRating }>
                             Отправить
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show = {this.state.reportModal} onHide = { () => {this.setState({reportModal: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Жалоба</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Выберите причину</Modal.Body>
+                    <Modal.Body>
+                        <Select
+                            options = {this.state.reasons}
+                            id = 'localityType'
+                            placeholder = {'Выберите причину...'}
+                            onChange = {event => {
+                                this.setState({selectedReason: event});
+                            }}
+                        />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendReport }>
+                            Пожаловаться
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -813,7 +897,8 @@ export default class UserProfile extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                        { this.state.reviews.length === 0 ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                                                          :  this.state.reviews }
                     </ListGroup>
                 </Container>
 
