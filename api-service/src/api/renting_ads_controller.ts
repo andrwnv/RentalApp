@@ -348,9 +348,6 @@ class RentingAdsController {
 
     async filter(req: express.Request, res: express.Response) {
         try {
-            const count = req.query.count as string;
-            const padding = (req.query.padding || 0) as string;
-
             const dates = JSON.parse(req.query.date as any);
             const rating = JSON.parse(req.query.rating as any);
             const price = JSON.parse(req.query.price as any);
@@ -364,18 +361,9 @@ class RentingAdsController {
                 return;
             }
 
-            if ( !count ) {
-                res.status(200).json({
-                    status: 'Success',
-                    data: (await filter(dates, rating, price)).slice(parseInt(padding))
-                });
-
-                return;
-            }
-
             res.status(200).json({
                 status: 'Success',
-                data: (await filter(dates, rating, price)).slice(parseInt(padding), parseInt(padding) + parseInt(count))
+                data: await filter(dates, rating, price)
             });
         } catch(err) {
             res.status(500).json({
