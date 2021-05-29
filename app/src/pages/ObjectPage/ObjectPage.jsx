@@ -32,7 +32,9 @@ export default class ObjectPage extends React.Component {
             rating: 0,
             reportModal: false,
             reasons: [],
-            selectedReason: null
+            selectedReason: null,
+            currentSelectForReport: null,
+            reviews: []
         }
 
         this.history = props.history;
@@ -193,10 +195,25 @@ export default class ObjectPage extends React.Component {
 
     componentDidMount() {
         this.loadReasons();
+        this.loadReviews();
     }
 
     sendReport = () => {
         this.setState({reportModal: false});
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = {
+            objectReviewId: this.state.currentSelectForReport,
+            reasonId: this.state.selectedReason.id
+        };
+
+        api.post('http://localhost:3080/report', data, {headers}).then();
     }
 
     loadReasons = () => {
@@ -214,12 +231,66 @@ export default class ObjectPage extends React.Component {
             const data = [];
             res.data.data.forEach(reason => {
                 data.push({
+                    id: reason.id,
                     label: reason.name,
                     value: reason.description
                 });
             });
 
             this.setState({reasons: data});
+        });
+    }
+
+    loadReviews = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        api.get(`http://localhost:3080/rating/object_review?objectId=${this.objectId}`, {headers}).then(res => {
+            let data = [];
+
+            res.data.data.forEach(review => {
+                const date = new Date(review.createdAt);
+                let dd = String(date.getDate()).padStart(2, '0');
+                let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                let yyyy = date.getFullYear();
+
+                data.push(
+                    <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                            <Row>
+                                <img
+                                    className = 'objPic'
+                                    src = {review.client.photoLink}
+                                    alt = 'object pic'
+                                />
+                                <Col>
+                                    <h4>{review.client.firstName} {review.client.lastName}</h4>
+                                    <p className = 'objInnerText'>Дата создания: {yyyy}-{mm}-{dd}</p>
+                                    <p className = 'objInnerText'>Оценка:
+                                        <Rating
+                                            style = {{marginLeft: '0.5em'}} name = 'size-small'
+                                            value = {review.rating} max = {10} size = 'small' readOnly
+                                        />
+                                    </p>
+                                    <p className = 'objInnerText'>{review.review}</p>
+                                </Col>
+
+                                <NavDropdown
+                                    title = {<div style = {{display: 'inline-block'}}> <Icon
+                                        icon = {threeDotsVertical}
+                                    /> </div>} id = 'basic-nav-dropdown'
+                                >
+                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true, currentSelectForReport: review.id}); }}>Пожаловаться</NavLink>
+                                </NavDropdown>
+                            </Row>
+                        </ListGroup.Item>
+                );
+            });
+
+            this.setState({reviews: data});
         });
     }
 
@@ -448,34 +519,8 @@ export default class ObjectPage extends React.Component {
                     </h2>
 
                     <ListGroup style = {{width: '100%', marginBottom: '20px'}}>
-                        <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                            <Row>
-                                <img
-                                    className = 'objPic'
-                                    src = 'https://sun9-22.userapi.com/s/v1/if1/H7Xnl4D-VUT3dx1UqHOkz6-Bdvp4Uo-hwnR9V9Ax-UuqVOmHtpUjp3w-bzmXL7lH2ChaBjxC.jpg?size=200x0&quality=96&crop=0,0,960,960&ava=1'
-                                    alt = 'object pic'
-                                />
-                                <Col>
-                                    <h4>User name</h4>
-                                    <p className = 'objInnerText'>Дата создания: 10-01-2020</p>
-                                    <p className = 'objInnerText'>Оценка:
-                                        <Rating
-                                            style = {{marginLeft: '0.5em'}} name = 'size-small'
-                                            value = {7} max = {10} size = 'small' readOnly
-                                        />
-                                    </p>
-                                    <p className = 'objInnerText'>Напимер, говорит он тебе: Бикарпуль! Бикарпуль! А потом, когда уже поздно, выясняется что это было "Be careful!"</p>
-                                </Col>
-
-                                <NavDropdown
-                                        title = {<div style = {{display: 'inline-block'}}> <Icon
-                                            icon = {threeDotsVertical}
-                                        /> </div>} id = 'basic-nav-dropdown'
-                                    >
-                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true}) }}>Пожаловаться</NavLink>
-                                </NavDropdown>
-                            </Row>
-                        </ListGroup.Item>
+                        { this.state.reviews.length === 0 ? <ListGroup.Item style = {{marginLeft: '-0.8em'}}>Здесь пока что пусто</ListGroup.Item>
+                                                          : this.state.reviews }
                     </ListGroup>
                 </Container>
             </div>

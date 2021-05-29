@@ -136,7 +136,20 @@ class RatingController {
 
     async objectReview(req: express.Request, res: express.Response) {
         try {
+            let reviews = await Connection.models.objectReview.findAll({
+                where: {
+                    FK_object: req.query.objectId,
+                },
+                include: [{
+                    model: Connection.models.clients,
+                    attributes: ['firstName', 'lastName', 'photoLink']
+                }]
+            });
 
+            res.status(200).json({
+                status: 'Success',
+                data: reviews
+            });
         } catch(err) {
             res.status(500).json({
                 status: 'Error',

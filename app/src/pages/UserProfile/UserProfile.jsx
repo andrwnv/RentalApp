@@ -39,7 +39,10 @@ export default class UserProfile extends React.Component {
             userRentNow: [],
             selectedRatingReview: 0,
             reviews: [],
-            reportModal: false
+            reportModal: false,
+            currentSelectForReport: null,
+            reportReasons: [],
+            selectedReason: null
         }
 
         this.history = props.history;
@@ -48,6 +51,45 @@ export default class UserProfile extends React.Component {
 
     sendReport = () => {
         this.setState({reportModal: false});
+
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = {
+            clientReviewId: this.state.currentSelectForReport,
+            reasonId: this.state.selectedReason.id
+        };
+
+        api.post('http://localhost:3080/report', data, {headers}).then();
+    }
+
+    loadReasons = () => {
+        const header = {
+            headers: {
+                'token': Cookies.get('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        };
+
+        api.get('http://localhost:3080/report/reasons', header).then(res => {
+            console.log(res);
+
+            const data = [];
+            res.data.data.forEach(reason => {
+                data.push({
+                    id: reason.id,
+                    label: reason.name,
+                    value: reason.description
+                });
+            });
+
+            this.setState({reportReasons: data});
+        });
     }
 
     sendRating = () => {
@@ -402,6 +444,7 @@ export default class UserProfile extends React.Component {
         this.loadBookingHistory();
         this.loadRentHistory();
         this.loadRentNow();
+        this.loadReasons();
     }
 
     handleClose = () => {
@@ -669,7 +712,7 @@ export default class UserProfile extends React.Component {
                                         icon = {threeDotsVertical}
                                     /> </div>} id = 'basic-nav-dropdown'
                                 >
-                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true}) }}>Пожаловаться</NavLink>
+                                    <NavLink eventKey = {3.1} onSelect={() => { this.setState({reportModal: true, currentSelectForReport: review.id}); }}>Пожаловаться</NavLink>
                                 </NavDropdown>
                             </Row>
                         </ListGroup.Item>
@@ -752,7 +795,7 @@ export default class UserProfile extends React.Component {
                     <Modal.Body>Выберите причину</Modal.Body>
                     <Modal.Body>
                         <Select
-                            options = {this.state.reasons}
+                            options = {this.state.reportReasons}
                             id = 'localityType'
                             placeholder = {'Выберите причину...'}
                             onChange = {event => {
