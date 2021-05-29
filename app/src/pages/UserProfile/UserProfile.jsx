@@ -495,7 +495,7 @@ export default class UserProfile extends React.Component {
                                                         icon = {threeDotsVertical}
                                                     /> </div>} id = 'basic-nav-dropdown' style={{left: '85%'}}>
                                                     <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
-                                                    { rent_res.rating === null ? <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalClient: true, clientForReview: rent_res.client.id, rentIdForReview: rent_res.id}) }} >Добавить отзыв</NavLink>
+                                                    { rent_res.rating === null ? <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalClient: true, clientForReview: rent_res.client.id, rentIdForReview: rent_res.id}) }} >Оставить отзыв</NavLink>
                                                                                : <div/>
                                                     }
 
@@ -920,14 +920,14 @@ export default class UserProfile extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant = 'secondary' onClick = { this.sendRatingForClient }>
-                            Отправить
+                            Оставить отзыв!
                         </Button>
                     </Modal.Footer>
                 </Modal>
 
                 <Modal show = {this.state.showRatingModalRentHist} onHide = { () => {this.setState({showRatingModalRentHist: false})} }>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление отзыва 2</Modal.Title>
+                        <Modal.Title>Добавление отзыва</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
                     <Modal.Body>
@@ -944,14 +944,14 @@ export default class UserProfile extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant = 'secondary' onClick = { this.sendRatingModalRentHist }>
-                            Отправить
+                            Оставить отзыв!
                         </Button>
                     </Modal.Footer>
                 </Modal>
 
                 <Modal show = {this.state.showRatingModalBookHist} onHide = { () => {this.setState({showRatingModalBookHist: false})} }>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление отзыва 1</Modal.Title>
+                        <Modal.Title>Добавление отзыва</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
                     <Modal.Body>
@@ -968,7 +968,7 @@ export default class UserProfile extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant = 'secondary' onClick = { this.sendRatingForBookHist }>
-                            Отправить
+                            Оставить отзыв!
                         </Button>
                     </Modal.Footer>
                 </Modal>

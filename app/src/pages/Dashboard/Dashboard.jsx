@@ -57,7 +57,7 @@ export default function Dashboard() {
                 curIndex++;
             }
 
-            jsxData[curIndex].push(<Ads name = {obj.title + obj.id} desc = {obj.description}
+            jsxData[curIndex].push(<Ads name = {obj.title} desc = {obj.description}
                                         picLinks = {obj.mediaLinks.urls[0]} objectId = {obj.id}/>);
         });
     }
