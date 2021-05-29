@@ -23,8 +23,8 @@ export default class UserProfile extends React.Component {
         this.state = {
             showDeleteModal: false,
             showPicChangeModal: false,
-            showRatingModalLandLord: false,
-            showRatingModalObject: false,
+            showRatingModalBookHist: false,
+            showRatingModalRentHist: false,
             showRatingModalClient: false,
             userProfilePic: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
             firstName: '',
@@ -47,7 +47,9 @@ export default class UserProfile extends React.Component {
             selectedReason: null,
             textReview: '',
             clientForReview: null,
-            rentIdForReview: null
+            rentIdForReview: null,
+            historyId: null,
+            objectId: null
         }
 
         this.history = props.history;
@@ -97,7 +99,7 @@ export default class UserProfile extends React.Component {
         });
     }
 
-    sendRatingForLandLord = () => {
+    sendRatingForBookHist = () => {
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/json',
@@ -105,13 +107,33 @@ export default class UserProfile extends React.Component {
             token: `${token}`
         };
 
-        this.state.selectedRatingReview = 0;
-        this.state.textReview = '';
-        this.state.clientForReview = null;
-        this.setState({showRatingModalLandLord: false, selectedRatingReview: 0, textReview: '', clientForReview: null});
+        const data = {
+            rating: this.state.selectedRatingReview,
+            review: this.state.textReview,
+            clientId: this.state.clientForReview,
+            isLandlord: false
+        };
+
+        const patchData = {
+            historyId: this.state.historyId,
+            rating: this.state.selectedRatingReview
+        };
+
+        api.post('http://localhost:3080/rating', data, {headers}).then();
+        api.patch('http://localhost:3080/rating/update_rate_book_hist', patchData, {headers}).then();
+
+        console.log(data);
+        console.log(patchData);
+
+        this.setState({showRatingModalBookHist: false, selectedRatingReview: 0, textReview: '', clientForReview: null, historyId: null});
+        this.getDataFromAPI();
+        this.loadBookingHistory();
+        this.loadRentHistory();
+        this.loadRentNow();
+        this.loadReasons();
     }
 
-    sendRatingForObject = () => {
+    sendRatingModalRentHist = () => {
         const token = Cookies.get('token');
         const headers = {
             'Content-Type': 'application/json',
@@ -119,10 +141,29 @@ export default class UserProfile extends React.Component {
             token: `${token}`
         };
 
-        this.state.selectedRatingReview = 0;
-        this.state.textReview = '';
-        this.state.clientForReview = null;
-        this.setState({showRatingModalObject: false, selectedRatingReview: 0, textReview: '', clientForReview: null});
+        const data = {
+            rating: this.state.selectedRatingReview,
+            review: this.state.textReview,
+            objectId: this.state.objectId,
+        };
+
+        const patchData = {
+            historyId: this.state.historyId,
+            rating: this.state.selectedRatingReview
+        };
+
+        console.log(data)
+        console.log(patchData)
+
+        api.post('http://localhost:3080/rating', data, {headers}).then();
+        api.patch('http://localhost:3080/rating/update_rate_rent_hist', patchData, {headers}).then();
+
+        this.setState({showRatingModalRentHist: false, selectedRatingReview: 0, textReview: '', objectId: null, historyId: null});
+        this.getDataFromAPI();
+        this.loadBookingHistory();
+        this.loadRentHistory();
+        this.loadRentNow();
+        this.loadReasons();
     }
 
     sendRatingForClient = () => {
@@ -146,7 +187,7 @@ export default class UserProfile extends React.Component {
         };
 
         api.post('http://localhost:3080/rating', data, {headers}).then();
-        api.patch('http://localhost:3080/rating/update_rate', patchData, {headers}).then();
+        api.patch('http://localhost:3080/rating/update_rate_rent', patchData, {headers}).then();
 
         this.setState({showRatingModalClient: false, selectedRatingReview: 0, textReview: '', clientForReview: null, rentIdForReview: null});
         this.getDataFromAPI();
@@ -623,12 +664,10 @@ export default class UserProfile extends React.Component {
                             <Col>
                                 <h4>{item.object.title}</h4>
                                 <p className = 'objInnerText'>Даты бронирования: {item.beginDate} по {item.endDate}</p>
-                                <p className = 'objInnerText'>Оценка арендодателя: <Rating
-                                    name = 'size-small' value = {7} max = {10} readOnly
-                                /></p>
-                                <p className = 'objInnerText'>Ваша оценка: <Rating
-                                    name = 'size-small' value = {8} max = {10} readOnly
-                                /></p>
+                                { item.rating === null ? <div/> :
+                                    <p className = 'objInnerText'>Ваша оценка: <Rating
+                                        name = 'size-small' value = {item.rating} max = {10} readOnly
+                                    /></p> }
                             </Col>
 
                             <NavDropdown
@@ -637,8 +676,10 @@ export default class UserProfile extends React.Component {
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
                                 <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalObject: true}) }}  >Добавить отзыв об объекте</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalLandLord: true}) }}  >Добавить отзыв о арендодателе</NavLink>
+
+                                { item.rating === null ? <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalBookHist: true, clientForReview: item.object.FK_landLord, historyId: item.id}) }}  >Добавить отзыв</NavLink>
+                                                       : <div/>}
+
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -677,12 +718,11 @@ export default class UserProfile extends React.Component {
                             <Col>
                                 <h4>{item.object.title}</h4>
                                 <p className = 'objInnerText'>Даты аренды: {item.beginDate} по {item.endDate}</p>
-                                <p className = 'objInnerText'>Оценка арендодателя: <Rating
-                                    name = 'size-small' value = {7} max = {10} readOnly
-                                /></p>
+
+                                { item.rating === null ? <div/> :
                                 <p className = 'objInnerText'>Ваша оценка: <Rating
-                                    name = 'size-small' value = {8} max = {10} readOnly
-                                /></p>
+                                    name = 'size-small' value = {item.rating} max = {10} readOnly
+                                /></p> }
                             </Col>
 
                             <NavDropdown
@@ -691,8 +731,10 @@ export default class UserProfile extends React.Component {
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
                                 <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalObject: true}) }}  >Добавить отзыв об объекте</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalLandLord: true}) }}  >Добавить отзыв о арендодателе</NavLink>
+
+                                { item.rating === null ? <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalRentHist: true, objectId: item.object.id, historyId: item.id}) }}  >Добавить отзыв</NavLink>
+                                    : <div/>}
+
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -883,9 +925,9 @@ export default class UserProfile extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show = {this.state.showRatingModalObject} onHide = { () => {this.setState({showRatingModalObject: false})} }>
+                <Modal show = {this.state.showRatingModalRentHist} onHide = { () => {this.setState({showRatingModalRentHist: false})} }>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление отзыва объекту</Modal.Title>
+                        <Modal.Title>Добавление отзыва 2</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
                     <Modal.Body>
@@ -901,15 +943,15 @@ export default class UserProfile extends React.Component {
                         <Form.Control as="textarea" rows={3} cols={5} onChange={e => {this.setState({textReview: e.target.value})}}/>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant = 'secondary' onClick = { this.sendRatingForObject }>
+                        <Button variant = 'secondary' onClick = { this.sendRatingModalRentHist }>
                             Отправить
                         </Button>
                     </Modal.Footer>
                 </Modal>
 
-                <Modal show = {this.state.showRatingModalLandLord} onHide = { () => {this.setState({showRatingModalLandLord: false})} }>
+                <Modal show = {this.state.showRatingModalBookHist} onHide = { () => {this.setState({showRatingModalBookHist: false})} }>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление отзыва арендодателю</Modal.Title>
+                        <Modal.Title>Добавление отзыва 1</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
                     <Modal.Body>
@@ -925,7 +967,7 @@ export default class UserProfile extends React.Component {
                         <Form.Control as="textarea" rows={3} cols={5} onChange={e => {this.setState({textReview: e.target.value})}}/>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant = 'secondary' onClick = { this.sendRatingForLandLord }>
+                        <Button variant = 'secondary' onClick = { this.sendRatingForBookHist }>
                             Отправить
                         </Button>
                     </Modal.Footer>
