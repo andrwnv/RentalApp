@@ -15,6 +15,7 @@ const upload = multer({
 
 const rentAdsRouter = express.Router();
 
+rentAdsRouter.get('/filter', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.filter);
 rentAdsRouter.get('/all', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.index);
 rentAdsRouter.post('/', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.newAd);
 rentAdsRouter.delete('/', passport.authenticate('jwt', { session: false }), RentingAdsCtrl.delete);

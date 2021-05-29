@@ -1,8 +1,80 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 
+import { Op } from 'sequelize';
 import Connection from '../models/db_models';
 import Client from '../models/types/client_type';
+
+const filter = async (dates: Date[], rating: number[], price: number[]) => {
+    const beginDate = new Date(dates[0]);
+    const endDate = new Date(dates[1]);
+
+    let objects = await Connection.models.object.findAll({
+        order: [
+            ['id', 'ASC'],
+        ],
+        where: {
+            [Op.and]: [
+                {
+                    rating: {
+                        [Op.between]: rating
+                    },
+                },
+                {
+                    price: {
+                        [Op.between]: price
+                    }
+                },
+            ]
+        }
+    });
+
+    let filterRes = [];
+    for (let item of objects) {
+        const tryFindBooking = await Connection.models.bookedObject.count({
+            where: {
+                FK_object: item.get('id') as number,
+                [Op.or]: [
+                    {
+                        beginDate: {
+                            [Op.between]: [beginDate, endDate]
+                        }
+                    },
+                    {
+                        endDate: {
+                            [Op.between]: [beginDate, endDate]
+                        }
+                    },
+                ]
+            }
+        });
+
+        const tryFindRent = await Connection.models.rentedObject.count({
+            where: {
+                FK_object: item.get('id') as number,
+                [Op.or]: [
+                    {
+                        beginDate: {
+                            [Op.between]: [beginDate, endDate]
+                        }
+                    },
+                    {
+                        endDate: {
+                            [Op.between]: [beginDate, endDate]
+                        }
+                    }
+                ]
+            }
+        });
+
+        if ( tryFindBooking === 0 && tryFindRent === 0 ) {
+            filterRes.push(item);
+        }
+    }
+
+    return filterRes;
+};
+
 
 class RentingAdsController {
     async index(req: express.Request, res: express.Response) {
@@ -221,7 +293,7 @@ class RentingAdsController {
                 }
             });
 
-            if (!object) {
+            if ( !object ) {
                 res.status(404).json({
                     status: 'Error',
                     data: 'Cant find object with this objectId'
@@ -265,6 +337,45 @@ class RentingAdsController {
             res.status(200).json({
                 status: 'Success',
                 data: userAds
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
+
+    async filter(req: express.Request, res: express.Response) {
+        try {
+            const count = req.query.count as string;
+            const padding = (req.query.padding || 0) as string;
+
+            const dates = JSON.parse(req.query.date as any);
+            const rating = JSON.parse(req.query.rating as any);
+            const price = JSON.parse(req.query.price as any);
+
+            if ( dates.length < 2 || rating.length < 2 || price.length < 2 ) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'Incorrect request'
+                });
+
+                return;
+            }
+
+            if ( !count ) {
+                res.status(200).json({
+                    status: 'Success',
+                    data: (await filter(dates, rating, price)).slice(parseInt(padding))
+                });
+
+                return;
+            }
+
+            res.status(200).json({
+                status: 'Success',
+                data: (await filter(dates, rating, price)).slice(parseInt(padding), parseInt(padding) + parseInt(count))
             });
         } catch(err) {
             res.status(500).json({
