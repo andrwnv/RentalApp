@@ -195,6 +195,39 @@ class RatingController {
             });
         }
     }
+
+    async update(req: express.Request, res: express.Response) {
+        try {
+            const data = await Connection.models.rentedObject.findOne({
+                where: {
+                    id: req.body.rentId
+                }
+            });
+
+            if (!data) {
+                res.status(400).json({
+                    status: 'Error',
+                    data: 'incorrect rent data'
+                });
+
+                return;
+            }
+
+            await data.update({
+                 rating: req.body.rating
+            });
+
+            res.status(200).json({
+                status: 'Success',
+                data: 'Done!'
+            });
+        } catch(err) {
+            res.status(500).json({
+                status: 'Error',
+                data: err
+            });
+        }
+    }
 }
 
 export const RatingCtrl = new RatingController();

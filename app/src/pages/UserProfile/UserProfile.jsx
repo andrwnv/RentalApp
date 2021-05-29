@@ -23,7 +23,9 @@ export default class UserProfile extends React.Component {
         this.state = {
             showDeleteModal: false,
             showPicChangeModal: false,
-            addRatingModal: false,
+            showRatingModalLandLord: false,
+            showRatingModalObject: false,
+            showRatingModalClient: false,
             userProfilePic: 'https://res.cloudinary.com/rentalappclone/image/upload/v1619861491/default_avatar.png',
             firstName: '',
             lastName: '',
@@ -42,7 +44,10 @@ export default class UserProfile extends React.Component {
             reportModal: false,
             currentSelectForReport: null,
             reportReasons: [],
-            selectedReason: null
+            selectedReason: null,
+            textReview: '',
+            clientForReview: null,
+            rentIdForReview: null
         }
 
         this.history = props.history;
@@ -92,8 +97,59 @@ export default class UserProfile extends React.Component {
         });
     }
 
-    sendRating = () => {
-        this.setState({addRatingModal: false});
+    sendRatingForLandLord = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        this.state.selectedRatingReview = 0;
+        this.state.textReview = '';
+        this.state.clientForReview = null;
+        this.setState({showRatingModalLandLord: false, selectedRatingReview: 0, textReview: '', clientForReview: null});
+    }
+
+    sendRatingForObject = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        this.state.selectedRatingReview = 0;
+        this.state.textReview = '';
+        this.state.clientForReview = null;
+        this.setState({showRatingModalObject: false, selectedRatingReview: 0, textReview: '', clientForReview: null});
+    }
+
+    sendRatingForClient = () => {
+        const token = Cookies.get('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            token: `${token}`
+        };
+
+        const data = {
+            rating: this.state.selectedRatingReview,
+            review: this.state.textReview,
+            clientId: this.state.clientForReview,
+            isLandlord: true
+        };
+
+        const patchData = {
+            rentId: this.state.rentIdForReview,
+            rating: this.state.selectedRatingReview
+        };
+
+        api.post('http://localhost:3080/rating', data, {headers}).then();
+        api.patch('http://localhost:3080/rating/update_rate', patchData, {headers}).then();
+
+        this.setState({showRatingModalClient: false, selectedRatingReview: 0, textReview: '', clientForReview: null, rentIdForReview: null});
+        this.getDataFromAPI();
     }
 
     userMoving = (userBookingData) => {
@@ -152,6 +208,12 @@ export default class UserProfile extends React.Component {
         this.state.reservations = [];
         this.state.confirmedBooking = [];
         this.state.waitingBookingConfirm = [];
+        this.state.reportReasons = [];
+        this.state.rentedNow = [];
+        this.state.userRentNow = [];
+        this.state.reviews = [];
+        this.state.rentHistory = [];
+        this.state.bookingHistory = [];
 
         api.get('http://localhost:3080/client/current_user', {headers}).then(res => {
             this.setState({
@@ -167,6 +229,52 @@ export default class UserProfile extends React.Component {
 
         api.get('http://localhost:3080/rent_ads/user_ads', {headers}).then(res => {
             res.data.data.forEach(async object => {
+                const date = new Date(object.createDate);
+                let dd = String(date.getDate()).padStart(2, '0');
+                let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                let yyyy = date.getFullYear();
+
+                this.setState({
+                    userObjects: this.state.userObjects.concat(
+                        [
+                            <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
+                                <Row>
+                                    <img
+                                        className = 'objPic'
+                                        src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
+                                            : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
+                                        alt = 'object pic'
+                                    />
+                                    <Col>
+                                        <h4>{object.title}</h4>
+                                        <p className = 'objInnerText'>Дата создания: {yyyy}-{mm}-{dd} </p>
+                                        <Rating name = 'size-small' value = {object.rating} max = {10} readOnly />
+                                    </Col>
+
+                                    <NavDropdown
+                                        title = {<div style = {{display: 'inline-block'}}> <Icon
+                                            icon = {threeDotsVertical}
+                                        /> </div>} id = 'basic-nav-dropdown'
+                                    >
+                                        <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
+                                        <NavLink
+                                            eventKey = {3.2} onSelect = {() => {
+                                            const data = {objectId: object.id};
+                                            api.delete('http://localhost:3080/rent_ads/', {headers, data})
+                                                .catch(err => {
+                                                    console.log(err);
+                                                });
+                                        }}
+                                        >
+                                            Удалить
+                                        </NavLink>
+                                    </NavDropdown>
+                                </Row>
+                            </ListGroup.Item>
+                        ]
+                    )
+                });
+
                 const booking_results = (await api.get(`http://localhost:3080/booking/${object.id}`, {headers})).data.data;
                 if( booking_results.length > 0 ) {
                     booking_results.forEach(booking_res => {
@@ -331,6 +439,13 @@ export default class UserProfile extends React.Component {
                                                 {
                                                     additionals.length === 0 ? <></> : <ol style={{marginLeft: '1em'}}> {additionals} </ol>
                                                 }
+                                                { rent_res.rating === null ? <div/>
+                                                                           : <p className = 'objInnerText'>Ваша оценка:
+                                                                                <Rating
+                                                                                 name = 'size-small' value = {rent_res.rating} max = {10} readOnly
+                                                                                />
+                                                                            </p>
+                                                }
                                             </Col>
 
                                             <div className = 'buttonsGroup'>
@@ -339,7 +454,10 @@ export default class UserProfile extends React.Component {
                                                         icon = {threeDotsVertical}
                                                     /> </div>} id = 'basic-nav-dropdown' style={{left: '85%'}}>
                                                     <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
-                                                    <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }} >Добавить отзыв</NavLink>
+                                                    { rent_res.rating === null ? <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalClient: true, clientForReview: rent_res.client.id, rentIdForReview: rent_res.id}) }} >Добавить отзыв</NavLink>
+                                                                               : <div/>
+                                                    }
+
                                                 </NavDropdown>
                                                 <Button variant = 'dark' style={{marginTop: '5px'}} onClick={() => { this.userLeave(rent_res); }}> Выселен </Button>
                                             </div>
@@ -348,47 +466,6 @@ export default class UserProfile extends React.Component {
                                 ])
                             });
                         });
-                    });
-
-                    this.setState({
-                        userObjects: this.state.userObjects.concat(
-                            [
-                                <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
-                                <Row>
-                                    <img
-                                        className = 'objPic'
-                                        src = {object.mediaLinks.urls.length !== 0 ? `${object.mediaLinks.urls[0]}`
-                                            : 'https://st3.depositphotos.com/23594922/31822/v/600/depositphotos_318221368-stock-illustration-missing-picture-page-for-website.jpg'}
-                                        alt = 'object pic'
-                                    />
-                                    <Col>
-                                        <h4>{object.title}</h4>
-                                        <p className = 'objInnerText'>Дата создания: {new Date(object.createDate).toDateString()}</p>
-                                        <Rating name = 'size-small' value = {object.rating} max = {10} readOnly />
-                                    </Col>
-
-                                    <NavDropdown
-                                        title = {<div style = {{display: 'inline-block'}}> <Icon
-                                            icon = {threeDotsVertical}
-                                        /> </div>} id = 'basic-nav-dropdown'
-                                    >
-                                        <NavLink eventKey = {3.1} href = {`/ad/${object.id}`}>Объявление</NavLink>
-                                        <NavLink
-                                            eventKey = {3.2} onSelect = {() => {
-                                            const data = {objectId: object.id};
-                                            api.delete('http://localhost:3080/rent_ads/', {headers, data})
-                                                .catch(err => {
-                                                    console.log(err);
-                                                });
-                                        }}
-                                        >
-                                            Удалить
-                                        </NavLink>
-                                    </NavDropdown>
-                                </Row>
-                            </ListGroup.Item>
-                            ]
-                        )
                     });
                 }
             });
@@ -560,7 +637,8 @@ export default class UserProfile extends React.Component {
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
                                 <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }}  >Добавить отзыв</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalObject: true}) }}  >Добавить отзыв об объекте</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalLandLord: true}) }}  >Добавить отзыв о арендодателе</NavLink>
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -613,7 +691,8 @@ export default class UserProfile extends React.Component {
                                 /> </div>} id = 'basic-nav-dropdown'
                             >
                                 <NavLink eventKey = {3.1} href={`/ad/${item.object.id}`}>Объявление</NavLink>
-                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({addRatingModal: true}) }}>Добавить отзыв</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalObject: true}) }}  >Добавить отзыв об объекте</NavLink>
+                                <NavLink eventKey = {3.2} onSelect={() => { this.setState({showRatingModalLandLord: true}) }}  >Добавить отзыв о арендодателе</NavLink>
                             </NavDropdown>
                         </Row>
                     </ListGroup.Item>
@@ -690,13 +769,7 @@ export default class UserProfile extends React.Component {
                 data.push(
                     <ListGroup.Item style = {{marginLeft: '-0.8em'}}>
                             <Row>
-                                <img
-                                    className = 'objPic'
-                                    src = {review.client.photoLink}
-                                    alt = 'object pic'
-                                />
                                 <Col>
-                                    <h4>{review.client.firstName} {review.client.lastName}</h4>
                                     <p className = 'objInnerText'>Дата создания: {yyyy}-{mm}-{dd}</p>
                                     <p className = 'objInnerText'>Оценка:
                                         <Rating
@@ -764,30 +837,6 @@ export default class UserProfile extends React.Component {
                     </Modal.Body>
                 </Modal>
 
-                <Modal show = {this.state.addRatingModal} onHide = { () => {this.setState({addRatingModal: false})} }>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Добавление отзыва</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
-                    <Modal.Body>
-                        <Form.Label>Оценка</Form.Label>
-                        <Rating
-                            name = 'size-small' value = {this.state.selectedRatingReview} max = {10} size = 'large'
-                            onChange={(_, newValue) => {
-                                this.setState({selectedRatingReview: newValue});
-                            }}
-                        />
-                        <br/>
-                        <Form.Label>Отзыв</Form.Label>
-                        <Form.Control as="textarea" rows={3} cols={5} />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant = 'secondary' onClick = { this.sendRating }>
-                            Отправить
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-
                 <Modal show = {this.state.reportModal} onHide = { () => {this.setState({reportModal: false})} }>
                     <Modal.Header closeButton>
                         <Modal.Title>Жалоба</Modal.Title>
@@ -806,6 +855,78 @@ export default class UserProfile extends React.Component {
                     <Modal.Footer>
                         <Button variant = 'secondary' onClick = { this.sendReport }>
                             Пожаловаться
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show = {this.state.showRatingModalClient} onHide = { () => {this.setState({showRatingModalClient: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Добавление отзыва арендатору</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
+                    <Modal.Body>
+                        <Form.Label>Оценка</Form.Label>
+                        <Rating
+                            name = 'size-small' value = {this.state.selectedRatingReview} max = {10} size = 'large'
+                            onChange={(_, newValue) => {
+                                this.setState({selectedRatingReview: newValue});
+                            }}
+                        />
+                        <br/>
+                        <Form.Label>Отзыв</Form.Label>
+                        <Form.Control as="textarea" rows={3} cols={5} onChange={e => {this.setState({textReview: e.target.value})}}/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendRatingForClient }>
+                            Отправить
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show = {this.state.showRatingModalObject} onHide = { () => {this.setState({showRatingModalObject: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Добавление отзыва объекту</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
+                    <Modal.Body>
+                        <Form.Label>Оценка</Form.Label>
+                        <Rating
+                            name = 'size-small' value = {this.state.selectedRatingReview} max = {10} size = 'large'
+                            onChange={(_, newValue) => {
+                                this.setState({selectedRatingReview: newValue});
+                            }}
+                        />
+                        <br/>
+                        <Form.Label>Отзыв</Form.Label>
+                        <Form.Control as="textarea" rows={3} cols={5} onChange={e => {this.setState({textReview: e.target.value})}}/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendRatingForObject }>
+                            Отправить
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show = {this.state.showRatingModalLandLord} onHide = { () => {this.setState({showRatingModalLandLord: false})} }>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Добавление отзыва арендодателю</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Добавьте оценку и отзыв</Modal.Body>
+                    <Modal.Body>
+                        <Form.Label>Оценка</Form.Label>
+                        <Rating
+                            name = 'size-small' value = {this.state.selectedRatingReview} max = {10} size = 'large'
+                            onChange={(_, newValue) => {
+                                this.setState({selectedRatingReview: newValue});
+                            }}
+                        />
+                        <br/>
+                        <Form.Label>Отзыв</Form.Label>
+                        <Form.Control as="textarea" rows={3} cols={5} onChange={e => {this.setState({textReview: e.target.value})}}/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant = 'secondary' onClick = { this.sendRatingForLandLord }>
+                            Отправить
                         </Button>
                     </Modal.Footer>
                 </Modal>

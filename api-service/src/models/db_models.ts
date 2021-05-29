@@ -193,6 +193,10 @@ const RentedObject = Connection.define(TablesName.RentedObject, {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    rating: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 });
 
 const UserRentalHistory = Connection.define(TablesName.UserRentalHistory, {
