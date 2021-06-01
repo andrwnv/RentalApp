@@ -1,13 +1,24 @@
-# UI for Database Coursework.
+# app
 
-#### Available Scripts:
+## Project setup
+```
+yarn install
+```
 
-### `yarn start`
-Runs the app in the development mode.
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
 
-### `yarn test`
-Launches the test runner in the interactive watch mode.
+### Compiles and minifies for production
+```
+yarn build
+```
 
-### `yarn build`
-Builds the app for production to the `build` folder.
+### Lints and fixes files
+```
+yarn lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
